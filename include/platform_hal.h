@@ -1518,11 +1518,19 @@ typedef  struct _INTF_STATS
 INTF_STATS, *PINTF_STATS;
 /* platform_hal_GetInterfaceStats() function */
 /**
-* @description Get Interface Stats for the given interface,considering only LAN to WAN/WAN to LAN traffic.
+* @description Get Interface Stats for the given interface, considering only LAN to WAN/WAN to LAN traffic.
 *
-* @param ifname - Interface name for which stats needs to be fetched.
-* @param pIntfStats - Interface Stats structure, to be returned.
+* @param ifname[in] - Interface name for which stats need to be fetched.
+* @param pIntfStats[out] - Interface Stats structure, to be returned.
+* <pre>
+*                pIntfStats is a structure with the following parameters :
 *
+*                rx_packet                   - Packets received. The range of acceptable values is 0 to 2^64 - 1.
+*                tx_packet                   - Packets sent. The range of acceptable values is 0 to 2^64 - 1.
+*                rx_bytes                    - Bytes received. The range of acceptable values is 0 to 2^64 - 1.
+*                tx_bytes                    - Bytes sent. The range of acceptable values is 0 to 2^64 - 1.
+*
+* </pre>
 * @return The status of the operation.
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
