@@ -16,7 +16,7 @@
 # Description
 The diagram below describes a high-level software architecture of the Platform HAL module stack. 
 
-![Platform HAL Architecture Diag](images/Platform_HAL_Architetcture.png)
+![Platform HAL Architecture Diag](images/Platform_HAL_Architecture.png)
 
 Platform HAL is an abstraction layer, implemented to interact with vendor software's for getting the hardware specific details such as Firmware Name, Boot loader Version, etc.
 This HAL layer is intended to be a common HAL,should be usable by any Ccspcomponents or Processes.
