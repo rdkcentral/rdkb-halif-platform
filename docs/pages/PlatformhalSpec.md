@@ -59,7 +59,7 @@ There are no asynchronous notifications.
 
 ## Blocking calls
 
-The API's are expected to work synchronously and should complete within a time period commensurate with the complexity of the operation and in accordance with any relevant specification.
+The API's are expected to work synchronously and should complete within a 2 seconds of time period commensurate with the complexity of the operation and in accordance with any relevant specification.
 
 Any calls that can fail due to the lack of a response should have a timeout period in accordance with any API documentation.
 
@@ -84,8 +84,6 @@ The logging should be consistence across all HAL components.
 If the vendor is going to log then it has to be logged in `xxx_vendor_hal.log` file name.
 
 Logging should be defined with log levels as per Linux standard logging.
-
-- #TODO - Review the requirement can we define the same as wifi, or state to use the `common` logging module defined by ccsp? 
 
 ## Memory and performance requirements
 
@@ -133,11 +131,21 @@ Covered as per "Description" sections in the API documentation.
 ```mermaid
 sequenceDiagram
 participant Caller
-participant HAL
+participant Platform HAL
 participant Vendor
-Note over Caller: Init once during bootup, Needed 
-Caller->>HAL: platform_hal_XXXInit
+Note over Caller: Init once during bootup, Needed for Dependent API's. <br> Ignore this if caller doesn't have any Dependent API's
+Caller->>Platform HAL: platform_hal_XXXInit()
+Platform HAL->>Vendor: 
+Vendor ->>Platform HAL: 
+Platform HAL->>Caller: platform_hal_XXXInit() return
+
+Caller->>Platform HAL: platform_hal_GetXXX()
+Platform HAL->>Vendor: 
+Vendor ->>Platform HAL: 
+Platform HAL->>Caller: platform_hal_GetXXX() return
+
+Caller->>Platform HAL: platform_hal_SetXXX()
+Platform HAL->>Vendor: 
+Vendor ->>Platform HAL: 
+Platform HAL->>Caller: platform_hal_SetXXX() return
 ```
-
-![Platform HAL Sequence Diagram](Platform_HAL_Sequence_Diagram.png)
-
