@@ -59,7 +59,7 @@ There are no asynchronous notifications.
 
 ## Blocking calls
 
-The API's are expected to work synchronously and should complete within a 2 seconds of time period commensurate with the complexity of the operation and in accordance with any relevant specification.
+The API's are expected to work synchronously and should complete within a time period commensurate with the complexity of the operation and in accordance with any relevant specification.
 
 Any calls that can fail due to the lack of a response should have a timeout period in accordance with any API documentation.
 
