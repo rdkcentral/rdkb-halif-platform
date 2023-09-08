@@ -1296,16 +1296,16 @@ INT platform_hal_GetDhcpv4_Options(dhcp_opt_list ** req_opt_list, dhcp_opt_list 
 *                dhcp_opt_list is a structure with following members :
 *
 *                dhcp_opt                    - DHCPv6 Options Possible values are :
-*                                              #define DHCPV6_OPT_82 82 // OPTION_SOL_MAX_RT: Solicite Maximum Retry Time.
-*                                              #define DHCPV6_OPT_23 23 // OPTION_SOL_MAX_RT: Solicite Maximum Retry Time.
-*                                              #define DHCPV6_OPT_95 95 // OPTION_SOL_MAX_RT: Solicite Maximum Retry Time.
-*                                              #define DHCPV6_OPT_24 24 // OPTION_DOMAIN_LIST.
-*                                              #define DHCPV6_OPT_83 83 // OPTION_INF_MAX_RT.
-*                                              #define DHCPV6_OPT_17 17 // OPTION_VENDOR_OPTS.
-*                                              #define DHCPV6_OPT_31 31 // OPTION_SNTP_SERVERS.
-*                                              #define DHCPV6_OPT_15 15 // User Class Option.
-*                                              #define DHCPV6_OPT_16 16 // Vendor Class Option.
-*                                              #define DHCPV6_OPT_20 20 // Reconfigure Accept Option.
+*                                              DHCPV6_OPT_82 82 // OPTION_SOL_MAX_RT: Solicite Maximum Retry Time.
+*                                              DHCPV6_OPT_23 23 // OPTION_SOL_MAX_RT: Solicite Maximum Retry Time.
+*                                              DHCPV6_OPT_95 95 // OPTION_SOL_MAX_RT: Solicite Maximum Retry Time.
+*                                              DHCPV6_OPT_24 24 // OPTION_DOMAIN_LIST.
+*                                              DHCPV6_OPT_83 83 // OPTION_INF_MAX_RT.
+*                                              DHCPV6_OPT_17 17 // OPTION_VENDOR_OPTS.
+*                                              DHCPV6_OPT_31 31 // OPTION_SNTP_SERVERS.
+*                                              DHCPV6_OPT_15 15 // User Class Option.
+*                                              DHCPV6_OPT_16 16 // Vendor Class Option.
+*                                              DHCPV6_OPT_20 20 // Reconfigure Accept Option.
 *
 *                dhcp_opt_val                - it can be any string and the parameter is optional.
 *                next                        - Pointer variable of dhcp_opt_list.
