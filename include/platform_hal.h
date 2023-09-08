@@ -392,8 +392,6 @@ INT platform_hal_SetWebAccessLevel(INT userIndex, INT ifIndex, ULONG value);
 /**
 * @description Initialize PandM DB (Database).
 *
-* @param None.
-*
 * @return The status of the operation.
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
@@ -405,8 +403,6 @@ INT platform_hal_PandMDBInit(void);
 /* platform_hal_DocsisParamsDBInit() function */
 /**
 * @description Initialize Platform HAL docsis parameters DB.
-*
-* @param None.
 *
 * @return The status of the operation.
 * @retval RETURN_OK if successful.
@@ -1264,18 +1260,18 @@ typedef struct dhcp_opt_list {
 *                dhcp_opt_list is a structure with following members :
 *
 *                dhcp_opt                    - DHCPv4 Options. Possible values are :
-*                                              #define DHCPV4_OPT_42 42 // NTP Server Addresses.
-*                                              #define DHCPV4_OPT_43 43 // Vendor Specific Information.
-*                                              #define DHCPV4_OPT_58 58 // DHCP Renewal (T1) Time.
-*                                              #define DHCPV4_OPT_59 59 // DHCP Rebinding (T2) Time.
-*                                              #define DHCPV4_OPT_60 60 // Class Identifier.
-*                                              #define DHCPV4_OPT_61 61 // Client Identifier.
-*                                              #define DHCPV4_OPT_100 100 // IEEE 1003.1 TZ String.
-*                                              #define DHCPV4_OPT_122 122 // CableLabs Client Configuration.
-*                                              #define DHCPV4_OPT_125 125 // Vendor-Identifying Vendor-Specific Information.
-*                                              #define DHCPV4_OPT_242 242 // Private Use.
-*                                              #define DHCPV4_OPT_243 243 // Private Use.
-*                                              #define DHCPV4_OPT_END 255 // DHCP Option End - used to check if option is valid.
+*                                              DHCPV4_OPT_42 42 // NTP Server Addresses.
+*                                              DHCPV4_OPT_43 43 // Vendor Specific Information.
+*                                              DHCPV4_OPT_58 58 // DHCP Renewal (T1) Time.
+*                                              DHCPV4_OPT_59 59 // DHCP Rebinding (T2) Time.
+*                                              DHCPV4_OPT_60 60 // Class Identifier.
+*                                              DHCPV4_OPT_61 61 // Client Identifier.
+*                                              DHCPV4_OPT_100 100 // IEEE 1003.1 TZ String.
+*                                              DHCPV4_OPT_122 122 // CableLabs Client Configuration.
+*                                              DHCPV4_OPT_125 125 // Vendor-Identifying Vendor-Specific Information.
+*                                              DHCPV4_OPT_242 242 // Private Use.
+*                                              DHCPV4_OPT_243 243 // Private Use.
+*                                              DHCPV4_OPT_END 255 // DHCP Option End - used to check if option is valid.
 *
 *                dhcp_opt_val                - It can be any string and the parameter is optional.
 *
