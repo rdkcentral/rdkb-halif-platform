@@ -111,7 +111,12 @@ Each API interface will be versioned using [Semantic Versioning 2.0.0](https://s
 
 ## Platform or Product Customization
 
-There is no platform or product customization expected for this interface use-case.
+The product can be configured via the following compile time defines:
+
+```c
+FEATURE_RDKB_LED_MANAGER        # Enable the LED Manager
+FEATURE_RDKB_THERMAL_MANAGER    # Enable the Thermal Manager
+```
 
 ## Interface API Documentation
 
@@ -124,9 +129,7 @@ All HAL function prototypes and datatype definitions are available in `platform_
 
 Covered as per "Description" sections in the API documentation.
 
-### Diagrams
-
-#### Sequence Diagram
+## Sequence Diagram
 
 ```mermaid
 sequenceDiagram
