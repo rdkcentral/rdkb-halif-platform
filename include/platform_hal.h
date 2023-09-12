@@ -143,7 +143,7 @@ typedef  enum {
 } RDK_CPUS; //!< RDK_CPUS
 
 #ifndef PLAT_PROC_MEM_MAX_LEN
-#define PLAT_PROC_MEM_MAX_LEN   40
+#define PLAT_PROC_MEM_MAX_LEN   40 /**< Maximum length for memory path strings */
 #endif
 
 /**********************************************************************
@@ -152,10 +152,10 @@ typedef  enum {
 typedef  struct
 _PLAT_PROC_MEM_INFO
 {
-    CHAR                            dramPath[PLAT_PROC_MEM_MAX_LEN]; /* TODO: description */
-    CHAR                            emmcPath1[PLAT_PROC_MEM_MAX_LEN];
-    CHAR                            emmcPath2[PLAT_PROC_MEM_MAX_LEN];
-    CHAR                            emmcPath3[PLAT_PROC_MEM_MAX_LEN];
+    CHAR                            dramPath[PLAT_PROC_MEM_MAX_LEN];  /**< Path to DRAM memory */
+    CHAR                            emmcPath1[PLAT_PROC_MEM_MAX_LEN]; /**< Path to the first eMMC memory */
+    CHAR                            emmcPath2[PLAT_PROC_MEM_MAX_LEN]; /**< Path to the second eMMC memory */
+    CHAR                            emmcPath3[PLAT_PROC_MEM_MAX_LEN]; /**< Path to the third eMMC memory */
 }
 PLAT_PROC_MEM_INFO, *PPLAT_PROC_MEM_INFO;
 
@@ -180,91 +180,97 @@ PLAT_PROC_MEM_INFO, *PPLAT_PROC_MEM_INFO;
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_GetDeviceConfigStatus(CHAR *pValue);
 
 /**
 * @brief Get telnet enable status.
 *
-* @param[out] pFlag - Telnet enable value, to be returned. TODO: add TRUE == ENABLED, FALSE == DISABLED? should really be called isTelnetEnabled
+* @param[out] pFlag - Pointer to a BOOLEAN variable where the Telnet enable status will be stored.
+*                     \n Set to TRUE if Telnet is enabled.
+*                     \n Set to FALSE if Telnet is disabled.
 *
 * @return The status of the operation.
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_GetTelnetEnable(BOOLEAN *pFlag);
 
 /**
 * @brief Enable/Disable telnet.
 *
-* @param[in] Flag - Telnet enable value. to be returned. TODO: add TRUE == ENABLED, FALSE == DISABLED? should really be called isTelnetEnabled
+* @param[in] Flag - Pointer to a BOOLEAN variable where the Telnet enable status will be stored.
+*                   \n Set to TRUE if Telnet is enabled.
+*                   \n Set to FALSE if Telnet is disabled.
 *
 * @return The status of the operation.
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_SetTelnetEnable(BOOLEAN Flag);
 
 /**
 * @brief Get SSH enable status.
 *
-* @param[out] pFlag - SSH enable value, to be returned.
-* TODO: Add TRUE , FALSE etc.. 
+* @param[out] pFlag - Pointer to a BOOLEAN variable where the SSH enable status will be stored.
+*                     \n Set to TRUE if SSH is enabled.
+*                     \n Set to FALSE if SSH is disabled.
 *
 * @return The status of the operation.
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_GetSSHEnable(BOOLEAN *pFlag);
 
 /**
 * @brief Enable/disable SSH.
 *
-* @param[in] Flag - SSH enable value.
-* TODO: Add TRUE , FALSE etc.. 
+* @param[in] Flag - Pointer to a BOOLEAN variable where the SSH enable status will be stored.
+*                     \n Set to TRUE if SSH is enabled.
+*                     \n Set to FALSE if SSH is disabled.
 *
 * @return The status of the operation.
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_SetSSHEnable(BOOLEAN Flag);
 
 /**
 * @brief Get SNMP Enable value from the device.
 *
-* @param[out] pValue - SNMP enable value, to be returned.
-*                   \n Possible values are 'rgWan', 'rgDualIp', and 'rgLanIp'. # TODO: Need ot add descriptions for these
-*                   \n The buffer size should be at least 32 bytes long.
+* @param[out] pValue - Pointer to a buffer where the SNMP enable value will be stored.
+*                     \n The buffer size should be at least 32 bytes long.
+*                     \n Possible values are:
+*                     \n 'rgWan': SNMP enabled for WAN interface.
+*                     \n 'rgDualIp': SNMP enabled for dual IP configuration.
+*                     \n 'rgLanIp': SNMP enabled for LAN IP configuration.
+*
 *
 * @return The status of the operation.
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_GetSNMPEnable(CHAR* pValue);
 
 /**
 * @brief Set SNMP Enable value.
 *
-* @param[in] pValue - SNMP enable value.
-*                  \n Possible values are rgWan, rgDualIp, rgLanIp. # TODO: Need ot add descriptions for these
-*                  \n The string's size shouldn’t exceed 32 bytes .
+* @param[in] pValue - Pointer to a buffer where the SNMP enable value will be stored.
+*                     \n The buffer size should be at least 32 bytes long.
+*                     \n Possible values are:
+*                     \n 'rgWan': SNMP enabled for WAN interface.
+*                     \n 'rgDualIp': SNMP enabled for dual IP configuration.
+*                     \n 'rgLanIp': SNMP enabled for LAN IP configuration.
 *
 * @return The status of the operation.
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_SetSNMPEnable(CHAR* pValue);
 
@@ -279,7 +285,6 @@ INT platform_hal_SetSNMPEnable(CHAR* pValue);
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_GetWebUITimeout(ULONG *pValue);
 
@@ -293,32 +298,36 @@ INT platform_hal_GetWebUITimeout(ULONG *pValue);
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_SetWebUITimeout(ULONG value);
 
 /**
 * @brief Get Web Access Level.
 *
-* @param userIndex - User Index. # TODO: Range?h ow does the user know what index to use?
-* @param ifIndex   - Interface Index. # TODO: how does the user know what index to use?
-* @param pValue    - Web Access Level, to be returned.
+* @param[in] userIndex - User index specifying the user for which the Web Access Level is requested.
+*                    \n The valid range of values is -2^31 to (2^31)-1.
+* @param[in] ifIndex - Interface index specifying the interface for which the Web Access Level is requested.
+*                    \n The valid range of values is -2^31 to (2^31)-1.
+* @param[out] pValue - Pointer to a ULONG variable where the Web Access Level will be stored and to be returned.
+*                    \n The valid range of values is 0 to (2^31)-1.
 *
 * @return The status of the operation.
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
 * @note Soon to be deprecated
-* @sideeffect None.
 */
 INT platform_hal_GetWebAccessLevel(INT userIndex, INT ifIndex, ULONG *pValue);
 
 /**
 * @brief Set Web Access Level.
 *
-* @param userIndex - User Index.
-* @param ifIndex   - Interface Index.
-* @param value     - Web Access Level.
+* @param[in] userIndex - User index specifying the user for which the Web Access Level is requested.
+*                    \n The valid range of values is -2^31 to (2^31)-1.
+* @param[in] ifIndex - Interface index specifying the interface for which the Web Access Level is requested.
+*                    \n The valid range of values is -2^31 to (2^31)-1.
+* @param[out] pValue - Pointer to a ULONG variable where the Web Access Level will be stored and to be returned.
+*                    \n The valid range of values is 0 to (2^31)-1.
 *
 * <table>
 * <caption id="multi_row">Lan Level Vs Index table</caption>
@@ -342,29 +351,26 @@ INT platform_hal_GetWebAccessLevel(INT userIndex, INT ifIndex, ULONG *pValue);
 * @retval RETURN_ERR if any error is detected.
 *
 * @note Soon to be deprecated
-* @sideeffect None.
 */
 INT platform_hal_SetWebAccessLevel(INT userIndex, INT ifIndex, ULONG value);
 
 /**
-* @brief Initialize PandM DB (Database). # TODO: Maybe description shouldn't use the abbreviations
+* @brief Initialize PandM Database.
 *
 * @return The status of the operation.
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_PandMDBInit(void);
 
 /**
-* @brief Initialize Platform HAL docsis parameters DB. # TODO:  description shouldn't use the abbreviations
+* @brief Initialize Platform HAL docsis parameters Database.
 *
 * @return The status of the operation.
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_DocsisParamsDBInit(void);
 
@@ -379,7 +385,6 @@ INT platform_hal_DocsisParamsDBInit(void);
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_GetModelName(CHAR* pValue);
 
@@ -394,7 +399,6 @@ INT platform_hal_GetModelName(CHAR* pValue);
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_GetRouterRegion(CHAR* pValue);
 
@@ -409,7 +413,6 @@ INT platform_hal_GetRouterRegion(CHAR* pValue);
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_GetSerialNumber(CHAR* pValue);
 
@@ -424,7 +427,6 @@ INT platform_hal_GetSerialNumber(CHAR* pValue);
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_GetHardwareVersion(CHAR* pValue);
 
@@ -440,7 +442,6 @@ INT platform_hal_GetHardwareVersion(CHAR* pValue);
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None
 */
 INT platform_hal_GetSoftwareVersion(CHAR* pValue, ULONG maxSize);
 
@@ -448,15 +449,14 @@ INT platform_hal_GetSoftwareVersion(CHAR* pValue, ULONG maxSize);
 * @brief Get the bootloader version flashed in the device.
 *
 * @param[out] pValue - Bootloader version.
-*                   \n It is a vendor specific value.
+*                      \n It is a vendor specific value.
 * @param[in]  maxSize - Size of the buffer allocated for pValue.
-*                   \n The value of maxSize should be greater than or equal to 256 bytes.
+*                      \n The value of maxSize should be greater than or equal to 256 bytes.
 *
 * @return The status of the operation.
 * @retval RETURN_OK  if successful.
 * @retval RETURN_ERR If any error is detected .
 *
-* @sideeffect None.
 */
 INT platform_hal_GetBootloaderVersion(CHAR* pValue, ULONG maxSize);
 
@@ -472,7 +472,6 @@ INT platform_hal_GetBootloaderVersion(CHAR* pValue, ULONG maxSize);
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_GetFirmwareName(CHAR* pValue, ULONG maxSize);
 
@@ -487,7 +486,6 @@ INT platform_hal_GetFirmwareName(CHAR* pValue, ULONG maxSize);
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_GetBaseMacAddress(CHAR *pValue);
 
@@ -502,7 +500,6 @@ INT platform_hal_GetBaseMacAddress(CHAR *pValue);
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_GetHardware(CHAR *pValue);
 
@@ -517,7 +514,6 @@ INT platform_hal_GetHardware(CHAR *pValue);
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_GetHardware_MemUsed(CHAR *pValue);
 
@@ -532,7 +528,6 @@ INT platform_hal_GetHardware_MemUsed(CHAR *pValue);
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_GetHardware_MemFree(CHAR *pValue);
 
@@ -546,7 +541,6 @@ INT platform_hal_GetHardware_MemFree(CHAR *pValue);
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_GetTotalMemorySize(ULONG *pulSize);
 
@@ -560,7 +554,6 @@ INT platform_hal_GetTotalMemorySize(ULONG *pulSize);
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_GetUsedMemorySize(ULONG *pulSize);
 
@@ -574,7 +567,6 @@ INT platform_hal_GetUsedMemorySize(ULONG *pulSize);
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_GetFreeMemorySize(ULONG *pulSize);
 
@@ -589,7 +581,6 @@ INT platform_hal_GetFreeMemorySize(ULONG *pulSize);
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_GetFactoryResetCount(ULONG *pulSize);
 
@@ -604,7 +595,6 @@ INT platform_hal_GetFactoryResetCount(ULONG *pulSize);
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_ClearResetCount(BOOLEAN bFlag);
 
@@ -623,7 +613,6 @@ INT platform_hal_ClearResetCount(BOOLEAN bFlag);
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_getTimeOffSet(CHAR *timeOffSet);
 
@@ -638,7 +627,6 @@ INT platform_hal_getTimeOffSet(CHAR *timeOffSet);
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_SetDeviceCodeImageTimeout(INT seconds);
 
@@ -652,7 +640,6 @@ INT platform_hal_SetDeviceCodeImageTimeout(INT seconds);
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_SetDeviceCodeImageValid(BOOLEAN flag);
 
@@ -667,7 +654,6 @@ INT platform_hal_SetDeviceCodeImageValid(BOOLEAN flag);
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_getFactoryPartnerId(CHAR *pValue);
 
@@ -683,7 +669,6 @@ INT platform_hal_getFactoryPartnerId(CHAR *pValue);
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_getFactoryCmVariant(CHAR *pValue);
 
@@ -699,7 +684,6 @@ INT platform_hal_getFactoryCmVariant(CHAR *pValue);
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_setFactoryCmVariant(CHAR *pValue);
 
@@ -726,12 +710,12 @@ typedef  enum {
 typedef struct _LEDMGMT_PARAMS
 {
 #ifdef FEATURE_RDKB_LED_MANAGER
-    char * led_name;
-    char * led_param; //!< TODO: what's this for?
+    char * led_name;  //!< Name of the LED.
+    char * led_param; //!< Additional parameters for the LED
 #endif
-    LED_COLOR  LedColor;  //!< LED_COLOR.
-    INT  State;	//!< 0 for Solid, 1 for Blink.
-    INT  Interval;	//!< In case fs State is blink then interval per second.
+    LED_COLOR  LedColor;  //!< LED color defined by the LED_COLOR enum.
+    INT  State;	//!< LED state. Use 0 for Solid and 1 for Blink.
+    INT  Interval; //!< Blink interval in case the LED state is set to blink (in seconds).
 }
 LEDMGMT_PARAMS, *PLEDMGMT_PARAMS;
 
@@ -778,7 +762,6 @@ int platform_hal_initLed(char * config_file_name);
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_setLed(PLEDMGMT_PARAMS pValue);
 
@@ -802,15 +785,14 @@ INT platform_hal_setLed(PLEDMGMT_PARAMS pValue);
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None
 */
 INT platform_hal_getLed(PLEDMGMT_PARAMS pValue);
 
 /**
 * @brief Get PWM (pulse width modulation) setting of the fan.
 *
-* @param[in] fanIndex - fanIndex is a OEM dependent value.
-*                    \n The range of fanIndex is from 0 to 1. #TODO: Is it always in this range?
+* @param[in] fanIndex - The index of the fan for which the speed is requested.
+*                       \n The valid range of fanIndex is from 0 to 1 (fanIndex value should be less than 2).
 *
 * @return FanSpeed in unsigned int.
 * @retval Range of FanSpeed is from 0 to n and “n” is OEM dependent.
@@ -820,8 +802,8 @@ UINT platform_hal_getFanSpeed(UINT fanIndex);
 /**
 * @brief Get RPM(rotations per minute) of the fan.
 *
-* @param[in] fanIndex - fanIndex is a OEM dependent value.
-*                    \n The range of fanIndex is from 0 to 1. #TODO: Is it always in this range?
+* @param[in] fanIndex - The index of the fan for which the RPM is requested
+*                       \n The valid range of fanIndex is from 0 to 1 (fanIndex value should be less than 2).
 *
 * @return FanRPM in unsigned int.
 * @retval Range of FanRPM is from 0 to n and “n” is OEM dependent.
@@ -831,8 +813,8 @@ UINT platform_hal_getRPM(UINT fanIndex);
 /**
 * @brief Get the status of rotor lock.
 *
-* @param[in] fanIndex - fanIndex is a OEM dependent value.
-*                    \n The range of fanIndex is from 0 to 1. #TODO: Is it always in this range?
+* @param[in] fanIndex - The index of the fan for which the rotor lock status is requested.
+*                       \n The valid range of fanIndex is from 0 to 1 (fanIndex value should be less than 2).
 *
 * @return The status of the rotor lock.
 * @retval  1 if locked.
@@ -845,8 +827,8 @@ INT platform_hal_getRotorLock(UINT fanIndex);
 /**
 * @brief Get the fan status.
 *
-* @param[in] fanIndex - fanIndex is a OEM dependent value.
-*                    \n The range of fanIndex is from 0 to 1. #TODO: Is it always in this range?
+* @param[in] fanIndex - The index of the fan for which the status is requested.
+*                       \n The valid range of fanIndex is from 0 to 1 (fanIndex value should be less than 2).
 *
 * @return The fan status.
 * @retval 1 if fan is enabled.
@@ -857,12 +839,12 @@ BOOLEAN platform_hal_getFanStatus(UINT fanIndex);
 /**
 * @brief Set the fan to maximum speed.
 *
-* @param[in] bOverrideFlag - Boolean value to enable/disable fan to run in highspeed.
-* @param[in] fanIndex - fanIndex is a OEM dependent value.
-*                    \n The range of fanindex is from 0 to 1. #TODO: Is it always in this range?
+* @param[in] bOverrideFlag - Boolean value to enable/disable fan to run at highspeed.
+* @param[in] fanIndex - The index of the fan for which the maximum speed override is to be configured.
+*                       \n The valid range of fanIndex is from 0 to 1 (fanIndex value should be less than 2).
 *
 * @return The status of the operation.
-* @retval RETURN_OK on success setting/unsetting the fan to run in high speed mode.
+* @retval RETURN_OK on success setting/unsetting the fan to run at high speed mode.
 * @retval RETURN_ERR if any error is detected.
 */
 INT platform_hal_setFanMaxOverride(BOOLEAN bOverrideFlag, UINT fanIndex);
@@ -880,14 +862,14 @@ typedef enum {
 
 typedef struct _FAN_PLATFORM_CONFIG
 {
-   UINT FanCount;
-   UINT SlowSpeedThresh;
-   UINT MediumSpeedThresh; /*!< TODO: Describe each value */
-   UINT FastSpeedThresh;
-   UINT FanMinRunTime;
-   UINT MonitoringDelay;
-   UINT PowerMonitoring;
-   UINT LogInterval;
+   UINT FanCount; /*!< The total number of fans in the system */
+   UINT SlowSpeedThresh; /*!< The threshold for considering a fan speed as "slow" */
+   UINT MediumSpeedThresh; /*!< The threshold for considering a fan speed as "medium" */
+   UINT FastSpeedThresh; /*!< The threshold for considering a fan speed as "fast" */
+   UINT FanMinRunTime; /*!< The minimum runtime for a fan before it can be turned off */
+   UINT MonitoringDelay; /*!< The delay in monitoring fan speed and conditions */
+   UINT PowerMonitoring; /*!< The power monitoring for the fans*/
+   UINT LogInterval; /*!< The Interval at which fan-related data is logged*/
 } THERMAL_PLATFORM_CONFIG;
 
 
@@ -961,12 +943,12 @@ typedef enum {
 /**
 * @brief Set the fan speed.
 *
-* @param[in] fanIndex - fanIndex is OEM dependent.
-*                    \n The valid range of fanIndex are 0 to 1. #TODO: Is it always in this range?
+* @param[in] fanIndex - The index of the fan for which the speed is to be set.
+*                       \n The valid range of fanIndex is from 0 to 1 (fanIndex value should be less than 2).
 * @param[in] fanSpeed - Off, Slow, medium or fast.
-*                    \n fanSpeed can hold any values from enum FAN_SPEED.
+*                       \n fanSpeed can hold any values from enum FAN_SPEED.
 * @param[out] pErrReason - Pointer where to provide error status.
-*                       \n pErrReason can hold any values from enum FAN_ERR.
+*                          \n pErrReason can hold any values from enum FAN_ERR.
 *
 * @return The status of the operation.
 * @retval RETURN_OK on success setting fan speed.
@@ -978,7 +960,7 @@ INT platform_hal_setFanSpeed(UINT fanIndex, FAN_SPEED fanSpeed, FAN_ERR* pErrRea
 * @brief Get current device temperature reading.
 *
 * @param[out] pTemp - Pointer where to provide temperature reading and it is OEM dependent.
-*                  \n The valid range of pTemp is from 0 to 100 degree celsius.
+*                     \n The valid range of pTemp is from 0 to 100 degrees celsius.
 *
 * @return The status of the operation.
 * @retval RETURN_OK on success reading temperature.
@@ -992,7 +974,7 @@ INT platform_hal_getFanTemperature(int* pTemp);
 * @brief To get input current.
 *
 * @param[out] pValue - Input current in milli Amperes.
-*                   \n pValue is OEM dependent.
+*                      \n pValue is OEM dependent.
 *
 * @return The status of the operation.
 * @retval RETURN_OK if successful.
@@ -1004,7 +986,8 @@ INT platform_hal_getInputCurrent(INT *pValue);
 * @brief To get input power.
 *
 * @param[out] pValue - Input power in milli Watts.
-*                   \n pValue is OEM dependent. #TODO: Is there a range for this?
+*                      \n It is Vendor specific value.
+*                      \n For example, the least possible value for a signed 32-bit integer is normally -2,147,483,648, and the greatest possible value is 2,147,483,647. The valid range varies accordingly for 64-bit architecture.
 *
 * @return The status of the operation.
 * @retval RETURN_OK if successful.
@@ -1016,9 +999,9 @@ INT platform_hal_getInputPower(INT *pValue);
 * @brief To get Radio Temperature.
 *
 * @param[in] radioIndex - Index of Wi-Fi radio channel.
-*                      \n Possible values are 0,1 and 2, depending on the number of radios supported by the platform. #TODO: Is it always in this range?
+*                         \n Possible values are 0, 1, and 2. It depends on the number of radios supported by the platform.
 * @param[out] pValue - Radio temperature and it is OEM dependent.
-*                   \n Range of pValue is 0 to 100 degree Celsius.
+*                      \n Range of pValue is 0 to 100 degree Celsius.
 *
 * @return The status of the operation.
 * @retval RETURN_OK if successful.
@@ -1032,7 +1015,7 @@ INT platform_hal_getRadioTemperature(INT radioIndex, INT* pValue);
 * @brief Set SNMP Onboard Reboot Enable value  to allow or ignore SNMP reboot.
 *
 * @param[in] pValue - SNMP Onboard Reboot Enable value.
-*                  \n Possible values are "disable" and "enable". #TODO: need to state caps / no caps etc.
+*                  \n Possible values are "disable" and "enable" (case-insensitive).
 *                  \n The string size shouldn't exceed 8 bytes.
 *
 * @return The status of the operation.
@@ -1048,7 +1031,7 @@ INT platform_hal_SetSNMPOnboardRebootEnable(CHAR* pValue);
 * @param[in] ethPort - Ethernet port(zero-based).
 *                   \n Here ethPort means combination of all interfaces such as moca,ethernet and wifi.
 *                   \n The valid range of ethPort is from 0 to MaxEthPort-1, where MaxEthPort is platform specific.
-* @param[out] pFlag - MACsec enable value, to be returned. #TODO: need to state Enable = 0 or Enable = 1 etc.
+* @param[out] pFlag - MACsec enable value, to be returned. Use "TRUE" to represent MACsec is enabled and "FALSE" to represent MACsec is disabled.
 *
 * @return The status of the operation.
 * @retval RETURN_OK if successful.
@@ -1062,7 +1045,7 @@ INT platform_hal_GetMACsecEnable(INT ethPort, BOOLEAN *pFlag);
 * @param[in] ethPort - Ethernet port (zero-based).
 *                   \n Here ethPort means combination of all interfaces such as moca,ethernet and wifi.
 *                   \n The valid range of ethPort is from 0 to MaxEthPort-1, where MaxEthPort is platform specific.
-* @param[in] Flag - MACsec enable value. #TODO: need to state Enable = 0 or Enable = 1 etc.
+* @param[in] Flag - MACsec enable value. Use "TRUE" to represent MACsec is enabled and "FALSE" to represent MACsec is disabled.
 *
 * @return The status of the operation.
 * @retval RETURN_OK if successful.
@@ -1076,7 +1059,7 @@ INT platform_hal_SetMACsecEnable(INT ethPort, BOOLEAN Flag);
 * @param[in] ethPort - Ethernet port (zero-based).
 *                   \n Here ethPort means combination of all interfaces such as moca,ethernet and wifi.
 *                   \n The valid range of ethPort is from 0 to MaxEthPort-1, where MaxEthPort is platform specific.
-* @param[out] pFlag - MACsec operation status value, to be returned. #TODO: need to state Enable = 0 or Enable = 1 etc.
+* @param[out] pFlag - MACsec operation status value, to be returned. Use "TRUE" to represent MACsec is enabled and "FALSE" to represent MACsec is disabled.
 *
 * @return The status of the operation.
 * @retval RETURN_OK if successful.
@@ -1104,7 +1087,7 @@ INT platform_hal_StartMACsec(INT ethPort, INT timeoutSec);
 *
 * @param[in] ethPort - Ethernet port (zero-based).
 *                   \n Here ethPort means combination of all interfaces such as moca,ethernet and wifi.
-*                   \n The valid range of ethPort is from 0 to MaxEthPort-1, where MaxEthPort is platform specific. #TODO: can you get the MaxEthPort
+*                   \n The valid range of ethPort is from 0 to MaxEthPort-1, where MaxEthPort is platform specific.
 *
 * @return The status of the operation.
 * @retval RETURN_OK if successful.
@@ -1141,7 +1124,6 @@ INT platform_hal_StopMACsec(INT ethPort);
 * @retval RETURN_ERR if any error is detected.
 *
 * @execution Synchronous.
-* \n @sideeffect None.
 *
 * @note HAL function need to allocate the array of PPLAT_PROC_MEM_INFO and return with ppinfo.
 *
@@ -1154,9 +1136,9 @@ INT platform_hal_GetMemoryPaths(RDK_CPUS index, PPLAT_PROC_MEM_INFO *ppinfo);
  */
 
 typedef struct dhcp_opt_list {
-    int dhcp_opt;       /*!< TODO: Descriptions required */
-    char * dhcp_opt_val;
-    struct dhcp_opt_list * next;
+    int dhcp_opt; /*!< The DHCP option code or identifier */
+    char * dhcp_opt_val; /*!< Pointer to the value associated with the DHCP option */
+    struct dhcp_opt_list * next; /*!< Pointer to the next DHCP option in the list */
 } dhcp_opt_list;
 
 /**
@@ -1169,7 +1151,7 @@ typedef struct dhcp_opt_list {
 *                dhcp_opt_list is a structure with following members :
 *
 *                dhcp_opt                    - DHCPv4 Options. Possible values are :
-*                                              DHCPV4_OPT_42 42 // NTP Server Addresses. #TODO: Did you check these display correctly in the html output?
+*                                              DHCPV4_OPT_42 42 // NTP Server Addresses.
 *                                              DHCPV4_OPT_43 43 // Vendor Specific Information.
 *                                              DHCPV4_OPT_58 58 // DHCP Renewal (T1) Time.
 *                                              DHCPV4_OPT_59 59 // DHCP Rebinding (T2) Time.
@@ -1227,12 +1209,12 @@ INT platform_hal_GetDhcpv4_Options(dhcp_opt_list ** req_opt_list, dhcp_opt_list 
 INT platform_hal_GetDhcpv6_Options ( dhcp_opt_list ** req_opt_list, dhcp_opt_list ** send_opt_list);
 
 typedef  enum {
-   PSM_UNKNOWN=0,
-   PSM_AC,
-   PSM_BATT,
-   PSM_HOT,
-   PSM_COOLED, /*!< TODO: Descriptions Requirements for this */
-   PSM_NOT_SUPPORTED,
+   PSM_UNKNOWN=0, /*!< Unknown or unspecified PSM state. */
+   PSM_AC, /*!< PSM state when the device is powered by an AC source. */
+   PSM_BATT, /*!< PSM state when the device is powered by a battery source. */
+   PSM_HOT, /*!< Hot PSM state, possibly indicating a high-temperature condition. */
+   PSM_COOLED, /*!< Cooled PSM state, possibly indicating a temperature-regulated condition */
+   PSM_NOT_SUPPORTED, /*!< State indicating that the specific PSM is not supported */
 } PSM_STATE, *PPSM_STATE; //!< Power Saving Mode State
 
 /**
@@ -1245,7 +1227,6 @@ typedef  enum {
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None. #TODO: Remove this globally, since the keyword isn't supported in doxygen by default we would have to add it. and every function set's it to none
 */
 INT platform_hal_SetLowPowerModeState(PPSM_STATE pState);
 
@@ -1259,45 +1240,44 @@ INT platform_hal_SetLowPowerModeState(PPSM_STATE pState);
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_getCMTSMac(CHAR *pValue);
 
 
 typedef  enum {
-   DOCSIS=1,
-   EWAN=2,  /*!< TODO: Description required */
+   DOCSIS=1, /*!< DOCSIS mode will be provisioned*/
+   EWAN=2,  /*!< EthWAN mode will be provisioned*/
 } WAN_INTERFACE;
 
 typedef  enum {
-   TRAFFIC_CNT_START=1,
-   TRAFFIC_CNT_STOP=2, /*!< TODO: Description required */
+   TRAFFIC_CNT_START=1, /*!< Traffic count start */
+   TRAFFIC_CNT_STOP=2, /*!< Traffic count stop */
 } TRAFFIC_CNT_COMMAND;
 
 typedef struct Traffic_client {
-    char mac[18]; //!< e.g. 00:AA:BB:CC:DD:EE
-    ULONG rxBytes;
-    ULONG txBytes; /*!< TODO: Description required */
+    char mac[18]; /*!< The client mac e.g. 00:AA:BB:CC:DD:EE */
+    ULONG rxBytes; /*!< The total number of bytes received by the client */
+    ULONG txBytes; /*!< The total number of bytes transmitted by the client */
 } Traffic_client_t, *pTraffic_client_t;
 
 typedef struct DSCP_Element {
-    UINT dscp_value;
-    UINT numClients;
-    Traffic_client_t Client[256];
-} DSCP_Element_t, *pDSCP_Element_t; /*!< TODO: Description required */
+    UINT dscp_value; /*!< DSCP value. */
+    UINT numClients; /*!< Number of clients associated with the DSCP value. */
+    Traffic_client_t Client[256]; /*!< Array of traffic clients for the specified DSCP value. */
+} DSCP_Element_t, *pDSCP_Element_t;
 
 typedef struct DSCP_list {
-    UINT numElements;
-    DSCP_Element_t DSCP_Element[64];
-} DSCP_list_t, *pDSCP_list_t; /*!< TODO: Description required */
+    UINT numElements; /*!< Number of DSCP elements in the list. */
+    DSCP_Element_t DSCP_Element[64]; /*!< Array of DSCP elements in the list. */
+} DSCP_list_t, *pDSCP_list_t;
 
 /**
 * @brief Control/Set traffic counting based on Dscp value.
 *
-* @param[in] interfaceType - 1 for DOCSIS , 2 for EWAN. #TODO: thats not valid, you should mentioned the enums not the numbers
-*                         \n interfaceType can hold any values from enum WAN_INTERFACE.
+* @param[in] interfaceType - The WAN interface type (e.g., DOCSIS or EthWAN) for which DSCP values will be configured.
+*                            \n interfaceType variable can hold any values from the enum WAN_INTERFACE.
 * @param[in] cmd - START/STOP.
-*               \n cmd can hold any values from enum TRAFFIC_CNT_COMMAND.
+*                 \n cmd can hold any values from enum TRAFFIC_CNT_COMMAND.
 * @param[in] pDscpVals - Comma separated string of base 10 values.
 *                     \n Range of DSCP values is [0-65,534].
 *                     \n The string’s size shouldn’t exceed 195 bytes.
@@ -1312,8 +1292,8 @@ INT platform_hal_setDscp(WAN_INTERFACE interfaceType , TRAFFIC_CNT_COMMAND cmd ,
 /**
 * @brief To reset Dscp Counter values.
 *
-* @param[in] interfaceType - 1 for DOCSIS , 2 for EWAN. #TODO: thats not valid, you should mentioned the enums not the numbers
-*                         \n interfaceType can hold any values from enum WAN_INTERFACE.
+* @param[in] interfaceType - The WAN interface type (e.g., DOCSIS or EthWAN) for which DSCP values will be configured.
+*                            \n interfaceType variable can hold any values from the enum WAN_INTERFACE.
 *
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
@@ -1324,8 +1304,8 @@ INT platform_hal_resetDscpCounts(WAN_INTERFACE interfaceType);
 /**
 * @brief To get counter data.
 *
-* @param[in] interfaceType - 1 for DOCSIS , 2 for EWAN. #TODO: thats not valid, you should mentioned the enums not the numbers
-*                         \n interfaceType can hold any values from enum WAN_INTERFACE.
+* @param[in] interfaceType - The WAN interface type (e.g., DOCSIS or EthWAN) for which DSCP values will be configured.
+*                            \n interfaceType variable can hold any values from the enum WAN_INTERFACE.
 * @param[out] pDSCP_List - List of client structure to be filled by hal.
 * <pre>
 *                DSCP_list is a structure with following members :
@@ -1357,26 +1337,26 @@ INT platform_hal_getDscpClientList(WAN_INTERFACE interfaceType , pDSCP_list_t pD
 * @brief Get cpu speed.
 *
 * @param[out] cpuSpeed - It is the processor speed in bogomips.
-*                     \n Expected values for cpuSpeed is 1 to n, where n is device specific. # TODO: How do you find out n?
-*                     \n The buffer size should be at least 16 bytes long.
+*                     \n It is a vendor specific.
+*                     \n The range of acceptable values is 0 to (2^64)-1 (inclusive).
+*                     \n The buffer size should be at least 64 bytes long.
 *
 * @return The status of the operation.
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_GetCPUSpeed(char *cpuSpeed);
 
 typedef  enum {
-   ACTIVE_BANK,
-   INACTIVE_BANK,
+   ACTIVE_BANK, /*!< Active firmware bank state */
+   INACTIVE_BANK, /*!< Inactive firmware bank state */
 } FW_BANK;
 
 typedef  struct _FW_BANK_INFO
 {
-      CHAR  fw_name[FW_NAME_MAX_LEN]; /* TODO: Description required */
-      CHAR  fw_state[FW_STATE_MAX_LEN];
+      CHAR  fw_name[FW_NAME_MAX_LEN]; /* Firmware name associated with the bank */
+      CHAR  fw_state[FW_STATE_MAX_LEN]; /* Firmware state information */
 }
 FW_BANK_INFO, *PFW_BANK_INFO;
 
@@ -1386,7 +1366,7 @@ FW_BANK_INFO, *PFW_BANK_INFO;
 * @param[in] bankIndex - The parameter can hold any value from the enum FW_BANK.
 * @param[out] pFW_Bankinfo - Structure variable containing Firmware image name and Firmware state.
 * <pre>
-*                _FW_BANK_INFO is a structure with following parameters :
+*                _FW_BANK_INFO is a structure with the following parameters :
 *
 *                fw_name                     - Firmware name. Vendor specific.
 *                                              The buffer size should be at least 64 bytes long.
@@ -1401,7 +1381,6 @@ FW_BANK_INFO, *PFW_BANK_INFO;
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_GetFirmwareBankInfo(FW_BANK bankIndex,PFW_BANK_INFO pFW_Bankinfo);
 
@@ -1417,7 +1396,8 @@ INTF_STATS, *PINTF_STATS;
 /**
 * @brief Get Interface Stats for the given interface, considering only LAN to WAN/WAN to LAN traffic.
 *
-* @param[in] ifname - Interface name for which stats need to be fetched. #TODO: How do you get a list of interfaces, this function should mention how.
+* @param[in] ifname - Interface name for which stats need to be fetched. 
+*                     \n To acquire a list of available network interfaces that are platform specific, use the 'ifconfig -a' command to know the list all interfaces on each platform.
 * @param[out] pIntfStats - Interface Stats structure, to be returned.
 * <pre>
 *                pIntfStats is a structure with the following parameters :
@@ -1431,7 +1411,6 @@ INTF_STATS, *PINTF_STATS;
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 *
-* @sideeffect None.
 */
 INT platform_hal_GetInterfaceStats(const char *ifname,PINTF_STATS pIntfStats);
 
