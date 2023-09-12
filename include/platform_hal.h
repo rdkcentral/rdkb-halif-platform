@@ -326,7 +326,7 @@ INT platform_hal_GetWebAccessLevel(INT userIndex, INT ifIndex, ULONG *pValue);
 *                    \n The valid range of values is -2^31 to (2^31)-1.
 * @param[in] ifIndex - Interface index specifying the interface for which the Web Access Level is requested.
 *                    \n The valid range of values is -2^31 to (2^31)-1.
-* @param[out] pValue - Pointer to a ULONG variable where the Web Access Level will be stored and to be returned.
+* @param[out] value - Pointer to a ULONG variable where the Web Access Level will be stored and to be returned.
 *                    \n The valid range of values is 0 to (2^31)-1.
 *
 * <table>
