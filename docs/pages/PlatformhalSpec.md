@@ -8,7 +8,7 @@
 
 ## Description
 
-The diagram below describes a high-level software architecture of the Platform HAL module stack. 
+The diagram below describes a high-level software architecture of the Platform HAL module stack.
 
 ![Platform HAL Architecture Diag](images/Platform_HAL_Architecture.png)
 
@@ -18,13 +18,13 @@ Platform HAL is an abstraction layer, implemented to interact with vendor softwa
 
 ### Initialization and Startup
 
-Below Initialization API's provide opportunity for the HAL code to initialize the appropriate DB's,start threads etc. 
+Below Initialization API's provide opportunity for the HAL code to initialize the appropriate DB's,start threads etc.
 
 The client is expected to call the corresponding API (in any order), during the boot sequence.
 
-> **platform_hal_PandMDBInit**<br>
-**platform_hal_DocsisParamsDBInit**<br>
-**platform_hal_initThermal**
+- `platform_hal_PandMDBInit()`
+- `platform_hal_DocsisParamsDBInit()`
+- `platform_hal_initThermal()`
 
 3rd party vendors will implement appropriately to meet operational requirements. This interface is expected to block if the hardware is not ready.
 
@@ -51,7 +51,7 @@ should be responsible to de-allocate internally.
 ## Power Management Requirements
 
 The HAL is not involved in any of the power management operation.
-Any power management state transitions MUST not affect the operation of the HAL. 
+Any power management state transitions MUST not affect the operation of the HAL.
 
 ## Asynchronous Notification Model
 
@@ -71,7 +71,7 @@ All the Platform HAL API's should return error synchronously as a return argumen
 
 There is no requirement for HAL to persist any setting information. The caller is responsible to persist any settings related to their implementation.
 
-# Nonfunctional requirements
+## Nonfunctional requirements
 
 Following non functional requirement should be supported by the component.
 
@@ -121,7 +121,7 @@ FEATURE_RDKB_THERMAL_MANAGER    # Enable the Thermal Manager
 ## Interface API Documentation
 
 All HAL function prototypes and datatype definitions are available in `platform_hal.h` file.
-    
+
 1. Components/Process must include `platform_hal.h` to make use of platform hal capabilities.
 2. Components/Process should add linker dependency for `libhal_platform.so`
 
