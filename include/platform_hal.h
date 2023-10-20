@@ -1068,7 +1068,7 @@ INT platform_hal_getRadioTemperature(INT radioIndex, INT *pValue);
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
 */
-INT platform_hal_SetSNMPOnboardRebootEnable(CHAR *pzValue);
+INT platform_hal_SetSNMPOnboardRebootEnable(CHAR *pValue);
 
 
 /**
