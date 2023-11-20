@@ -105,19 +105,24 @@ extern "C"{
  */
 
 //DHCPv6 Options
-#define DHCPV6_OPT_82  82  //!< OPTION_SOL_MAX_RT: Solicite Maximum Retry Time
-#define DHCPV6_OPT_23  23  //!< OPTION_SOL_MAX_RT: Solicite Maximum Retry Time
-#define DHCPV6_OPT_95  95  //!< OPTION_SOL_MAX_RT: Solicite Maximum Retry Time
-#define DHCPV6_OPT_24  24  //!< OPTION_DOMAIN_LIST
-#define DHCPV6_OPT_83  83  //!< OPTION_INF_MAX_RT
-#define DHCPV6_OPT_17  17  //!< OPTION_VENDOR_OPTS
-#define DHCPV6_OPT_31  31  //!< OPTION_SNTP_SERVERS
-#define DHCPV6_OPT_15  15  //!< User Class Option
-#define DHCPV6_OPT_16  16  //!< Vendor Class Option
-#define DHCPV6_OPT_20  20  //!< Reconfigure Accept Option
-
+#define DHCPV6_OPT_3    3  // Identity Association for Non-temporary Addresses Option
+#define DHCPV6_OPT_5    5  // IA Address Option
+#define DHCPV6_OPT_15  15  // User Class Option
+#define DHCPV6_OPT_16  16  // Vendor Class Option
+#define DHCPV6_OPT_17  17  // OPTION_VENDOR_OPTS
+#define DHCPV6_OPT_20  20  // Reconfigure Accept Option
+#define DHCPV6_OPT_22  22  // OPTION_SIP_SERVER_A
+#define DHCPV6_OPT_23  23  // DNS Recursive Name Server option
+#define DHCPV6_OPT_24  24  // OPTION_DOMAIN_LIST
+#define DHCPV6_OPT_25  25  // Identity Association for Prefix Delegation Option
+#define DHCPV6_OPT_31  31  // OPTION_SNTP_SERVERS
+#define DHCPV6_OPT_64  64  // OPTION_AFTR_NAME 
+#define DHCPV6_OPT_82  82  // OPTION_SOL_MAX_RT: Solicite Maximum Retry Time
+#define DHCPV6_OPT_83  83  // OPTION_INF_MAX_RT
+#define DHCPV6_OPT_95  95  // OPTION_SOL_MAX_RT: Solicite Maximum Retry Time
 
 //DHCPv4 Options
+#define DHCPV4_OPT_2   2   // Time Offset
 #define DHCPV4_OPT_42  42  //!< NTP Server Addresses
 #define DHCPV4_OPT_43  43  //!< Vendor Specific Information
 #define DHCPV4_OPT_58  58  //!< DHCP Renewal (T1) Time
