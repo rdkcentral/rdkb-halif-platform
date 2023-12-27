@@ -1060,6 +1060,26 @@ INT platform_hal_getInputPower(INT *pValue);
  */
 INT platform_hal_getRadioTemperature(INT radioIndex, INT *pValue);
 
+
+/**
+ * @brief Get the ECO mode status for a specific radio module.
+ *
+ * This function retrieves the ECO mode status of radio module identified by `radioIndex`
+ *
+ * @param[in] radioIndex - Index of the radio module to query.
+ *                         \n Possible values are 0, 1.
+ *                         \n value 0 means 2.4GHz WiFi radio, value 1 means 5GHz WiFi radio.
+ * @param[out] pValue - Pointer to an integer variable to store the ECO mode status .
+ *                         \n Possible values are 0, 1.
+ *                         \n value 0 means ECO mode is disabled, value 1 means ECO mode is enabled.
+ *
+ * @return The status of the operation.
+ * @retval RETURN_OK if the ECO mode is successfully retrieved.
+ * @retval RETURN_ERR if an error is encountered during the operation.
+ *
+ */
+INT platform_hal_getEcoModeStatus(INT radioIndex, INT *pValue);
+
 #endif
 
 /**
