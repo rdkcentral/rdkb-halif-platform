@@ -1403,8 +1403,8 @@ INT platform_hal_GetInterfaceStats(const char *ifname,PINTF_STATS pIntfStats);
 * @brief Get Device Factory reset status
 *
 * @param[in] Flag - Pointer to a BOOLEAN variable where FR status will be stored.
-*                   \n Set to TRUE if FR sttaus is present.
-*                   \n Set to FALSE if FR status is not present.
+*                   \n Set to TRUE if hard FR status is present.
+*                   \n Set to FALSE if hard FR status is not present.
 *
 * @return The status of the operation
 * @retval RETURN_OK if status flag present
