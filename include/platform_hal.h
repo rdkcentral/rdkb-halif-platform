@@ -1397,6 +1397,32 @@ INTF_STATS, *PINTF_STATS;
 */
 INT platform_hal_GetInterfaceStats(const char *ifname,PINTF_STATS pIntfStats);
 
+#ifdef FEATURE_RDKB_TELCOVOICE_MANAGER
+
+/**
+* @brief Get Device Factory reset status
+*
+* @return The status of the operation
+* @retval RETURN_OK if status flag present
+* @retval RETURN_ERR if status flag not present
+*
+* @sideeffect None
+*/
+INT platform_hal_VoiceGetFRStatus();
+
+/**
+* @brief Reset Device Factory reset status
+*
+* @return The status of the operation
+* @retval RETURN_OK if able to reset the status flag
+* @retval RETURN_ERR if cannot reset the status flag
+*
+* @sideeffect None
+*/
+INT platform_hal_VoiceResetFRStatus();
+
+#endif
+
 #ifdef __cplusplus
 }
 #endif
