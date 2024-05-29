@@ -1400,7 +1400,7 @@ INT platform_hal_GetInterfaceStats(const char *ifname,PINTF_STATS pIntfStats);
 #ifdef FEATURE_RDKB_TELCOVOICE_MANAGER
 
 /**
-* @brief Get Voice HardFactory Reset status
+* @brief Get Voice Hard Factory Reset status
 *
 * @param[in] Flag - Pointer to a BOOLEAN variable where FR status will be stored.
 *                   \n Set to TRUE if hard FR status is present.
@@ -1415,7 +1415,7 @@ INT platform_hal_GetInterfaceStats(const char *ifname,PINTF_STATS pIntfStats);
 INT platform_hal_VoiceGetFRStatus(BOOLEAN *pIsFRTriggered);
 
 /**
-* @brief Reset Voice Hard  Factory Reset status
+* @brief Reset Voice Hard Factory Reset status
 *
 * @return The status of the operation
 * @retval RETURN_OK if able to reset the status flag
