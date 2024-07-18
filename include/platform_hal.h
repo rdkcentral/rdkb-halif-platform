@@ -458,7 +458,7 @@ INT platform_hal_GetModelName(CHAR *pValue);
 * @retval RETURN_ERR if any error is detected.
 *
 */
-INT platform_hal_GetRouterRegion(CHAR *pValue);
+INT platform_hal_GetRouterRegion(char *region);
 
 /**
 * @brief Get device serial number.
