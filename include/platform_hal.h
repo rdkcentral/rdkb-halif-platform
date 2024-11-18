@@ -1400,6 +1400,52 @@ INT platform_hal_GetInterfaceStats(const char *ifname,PINTF_STATS pIntfStats);
 INT platform_hal_GetPppUserName(CHAR* pUserName, ULONG maxSize);
 INT platform_hal_GetPppPassword(CHAR* pPassword, ULONG maxSize);
 
+
+/**
+ * @brief Apply QoS/traffic management settings using the specified network parameters.
+ *
+ * This function applies Quality of Service (QoS) and traffic management configurations
+ * on the Platform HAL based on the provided network parameters.
+ *
+ * @param[in] params Pointer to a `hal_network_params_t` structure containing the 
+ *                   network settings such as IP addresses, ports, protocol, and DSCP value.
+ *
+ * @return 0 on success, negative value on error.
+ */
+typedef struct {
+    uint8_t src_mac[6];         /**< Source MAC Address */
+
+    ip_version_t ip_version;    /**< IP version (either IPv4 or IPv6) */
+
+    /** 
+     * @brief Source IP Address
+     * 
+     * Union for IPv4 and IPv6 addresses. Choose one based on the IP version.
+     */
+    union {
+        uint32_t ipv4;          /**< Source IP Address (IPv4 format) */
+        uint8_t ipv6[16];       /**< Source IP Address (IPv6 format) */
+    } src_ip;
+
+    /** 
+     * @brief Destination IP Address
+     * 
+     * Union for IPv4 and IPv6 addresses. Choose one based on the IP version.
+     */
+    union {
+        uint32_t ipv4;          /**< Destination IP Address (IPv4 format) */
+        uint8_t ipv6[16];       /**< Destination IP Address (IPv6 format) */
+    } dest_ip;
+
+    uint16_t dest_port;         /**< Destination Port number */
+    uint16_t src_port;          /**< Source Port number */
+
+    protocol_t protocol;        /**< Transport Protocol (TCP/UDP) */
+    uint8_t dscp_value;         /**< DSCP Value for Quality of Service (QoS) */
+} hal_network_params_t;
+
+INT platform_hal_qos_apply(const hal_network_params_t *params);
+
 #ifdef __cplusplus
 }
 #endif
