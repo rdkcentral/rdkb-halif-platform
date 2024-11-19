@@ -74,10 +74,20 @@ extern "C"{
 #define ULONG unsigned long
 #endif
 
+#ifndef UINT8_T
+#define UINT8_T unsigned char
+#endif
 
+#ifndef UINT16_T
+#define UINT16_T unsigned short
+#endif
 
-#ifndef UINT64_t
-#define UINT64_t unsigned long long
+#ifndef UINT32_T
+#define UINT32_T unsigned int
+#endif
+
+#ifndef UINT64_T
+#define UINT64_T unsigned long long
 #endif
 
 #ifndef TRUE
@@ -1436,7 +1446,7 @@ typedef struct {
      * The MAC address of the source device, stored as a 6-byte array 
      * in standard hardware address format.
      */
-    uint8_t src_mac[6]; /**< Source MAC Address. */
+    UINT8_T src_mac[6]; /**< Source MAC Address. */
 
     /**
      * @brief IP version.
@@ -1454,8 +1464,8 @@ typedef struct {
      * the value of the `ip_version` field.
      */
     union {
-        uint32_t ipv4;          /**< Source IP Address in IPv4 format (32 bits). */
-        uint8_t ipv6[16];       /**< Source IP Address in IPv6 format (128 bits). */
+        UINT32_T ipv4;          /**< Source IP Address in IPv4 format (32 bits). */
+        UINT8_T ipv6[16];       /**< Source IP Address in IPv6 format (128 bits). */
     } src_ip;
 
     /**
@@ -1463,11 +1473,11 @@ typedef struct {
      *
      * Union that stores the destination IP address, which can be in 
      * either IPv4 or IPv6 format. The specific member used is determined 
-     * by the value of the `ip_version` field.
+     * by the `ip_version` field value.
      */
     union {
-        uint32_t ipv4;          /**< Destination IP Address in IPv4 format (32 bits). */
-        uint8_t ipv6[16];       /**< Destination IP Address in IPv6 format (128 bits). */
+        UINT32_T ipv4;          /**< Destination IP Address in IPv4 format (32 bits). */
+        UINT8_T ipv6[16];       /**< Destination IP Address in IPv6 format (128 bits). */
     } dest_ip;
 
     /**
@@ -1479,7 +1489,7 @@ typedef struct {
      *
      * @note Valid range: 0 to 65535.
      */
-    uint16_t dest_port; /**< Destination Port number in network byte order. */
+    UINT16_T dest_port; /**< Destination Port number in network byte order. */
 
     /**
      * @brief Source Port.
@@ -1490,7 +1500,7 @@ typedef struct {
      *
      * @note Valid range: 0 to 65535.
      */
-    uint16_t src_port; /**< Source Port number in network byte order. */
+    UINT16_T src_port; /**< Source Port number in network byte order. */
 
     /**
      * @brief Transport protocol.
@@ -1507,7 +1517,7 @@ typedef struct {
      * The DSCP value is 6 bits wide and ranges from 0 to 63. It is used to 
      * prioritize network traffic for better Quality of Service.
      */
-    uint8_t dscp_value; /**< DSCP value for QoS (range: 0-63). */
+    UINT8_T dscp_value; /**< DSCP value for QoS (range: 0-63). */
 } hal_network_params_t;
 
 /**
