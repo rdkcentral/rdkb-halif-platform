@@ -1397,7 +1397,34 @@ INTF_STATS, *PINTF_STATS;
 */
 INT platform_hal_GetInterfaceStats(const char *ifname,PINTF_STATS pIntfStats);
 
+/**
+ * @brief Get the PPP username.
+ * 
+ * This function retrieves the PPP username and stores it in the buffer 
+ * pointed to by `pUserName`.
+ *
+ * @param[out] pUserName Pointer to a buffer to store the PPP username.
+ * @param[in] maxSize The maximum size of the `pUserName` buffer.
+ *
+ * @returns The status of the operation.
+ *      - RETURN_OK if the username is successfully retrieved.
+ *      - RETURN_ERR if an error is encountered during the operation.
+ */
 INT platform_hal_GetPppUserName(CHAR* pUserName, ULONG maxSize);
+
+/**
+ * @brief Get the PPP password.
+ * 
+ * This function retrieves the PPP password and stores it in the buffer 
+ * pointed to by `pPassword`.
+ *
+ * @param[out] pPassword Pointer to a buffer to store the PPP password.
+ * @param[in] maxSize The maximum size of the `pPassword` buffer.
+ *
+ * @returns The status of the operation.
+ *      - RETURN_OK if the password is successfully retrieved.
+ *      - RETURN_ERR if an error is encountered during the operation.
+ */
 INT platform_hal_GetPppPassword(CHAR* pPassword, ULONG maxSize);
 
 #ifdef __cplusplus
