@@ -1407,9 +1407,6 @@ INTF_STATS, *PINTF_STATS;
 */
 INT platform_hal_GetInterfaceStats(const char *ifname,PINTF_STATS pIntfStats);
 
-INT platform_hal_GetPppUserName(CHAR* pUserName, ULONG maxSize);
-INT platform_hal_GetPppPassword(CHAR* pPassword, ULONG maxSize);
-
 /**
  * @brief Enumeration of IP version types.
  *
