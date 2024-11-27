@@ -74,7 +74,17 @@ extern "C"{
 #define ULONG unsigned long
 #endif
 
+#ifndef UINT8_t
+#define UINT8_t unsigned char
+#endif
 
+#ifndef UINT16_t
+#define UINT16_t unsigned short
+#endif
+
+#ifndef UINT32_t
+#define UINT32_t unsigned int
+#endif
 
 #ifndef UINT64_t
 #define UINT64_t unsigned long long
@@ -1426,6 +1436,131 @@ INT platform_hal_GetPppUserName(CHAR* pUserName, ULONG maxSize);
  *      - RETURN_ERR if an error is encountered during the operation.
  */
 INT platform_hal_GetPppPassword(CHAR* pPassword, ULONG maxSize);
+
+/**
+ * @brief Enumeration of IP version types.
+ *
+ * This enum defines the supported IP versions for the network parameters,
+ * including IPv4 and IPv6.
+ */
+typedef enum {
+    IP_VERSION_IPV4,  /**< IPv4 */
+    IP_VERSION_IPV6   /**< IPv6 */
+} ip_version_t;
+
+/**
+ * @brief Enumeration of transport protocol types.
+ *
+ * This enum defines the supported transport protocols for network traffic,
+ * including Transmission Control Protocol (TCP) and User Datagram Protocol (UDP).
+ */
+typedef enum {
+    PROTOCOL_TCP,  /**< Transmission Control Protocol (TCP) */
+    PROTOCOL_UDP   /**< User Datagram Protocol (UDP) */
+} protocol_t;
+
+/**
+ * @brief Structure representing network parameters for QoS and traffic management.
+ *
+ * This structure encapsulates the necessary network settings for managing 
+ * Quality of Service (QoS) and traffic, including source and destination 
+ * MAC and IP addresses, port numbers, protocol type, and DSCP value.
+ */
+typedef struct {
+    /**
+     * @brief Source MAC Address.
+     *
+     * The MAC address of the source device, stored as a 6-byte array 
+     * in standard hardware address format.
+     */
+    UINT8_t src_mac[6]; /**< Source MAC Address. */
+
+    /**
+     * @brief IP version.
+     *
+     * Indicates the IP version being used, either IPv4 or IPv6. 
+     * This field determines the format of the `src_ip` and `dest_ip` fields.
+     */
+    ip_version_t ip_version; /**< IP version (IPv4 or IPv6). */
+
+    /**
+     * @brief Source IP Address.
+     *
+     * Union that stores the source IP address, which can be in either 
+     * IPv4 or IPv6 format. The specific member used is determined by 
+     * the value of the `ip_version` field.
+     */
+    union {
+        UINT32_t ipv4;          /**< Source IP Address in IPv4 format (32 bits). */
+        UINT8_t ipv6[16];       /**< Source IP Address in IPv6 format (128 bits). */
+    } src_ip;
+
+    /**
+     * @brief Destination IP Address.
+     *
+     * Union that stores the destination IP address, which can be in 
+     * either IPv4 or IPv6 format. The specific member used is determined 
+     * by the `ip_version` field value.
+     */
+    union {
+        UINT32_t ipv4;          /**< Destination IP Address in IPv4 format (32 bits). */
+        UINT8_t ipv6[16];       /**< Destination IP Address in IPv6 format (128 bits). */
+    } dest_ip;
+
+    /**
+     * @brief Destination Port.
+     *
+     * The port number for the destination endpoint is specified in 
+     * network byte order. This field is used to identify the target 
+     * service or application on the destination device.
+     *
+     * @note Valid range: 0 to 65535.
+     */
+    UINT16_t dest_port; /**< Destination Port number in network byte order. */
+
+    /**
+     * @brief Source Port.
+     *
+     * The port number for the source endpoint is specified in network byte order. 
+     * This field is used to identify the originating service or application on 
+     * the source device.
+     *
+     * @note Valid range: 0 to 65535.
+     */
+    UINT16_t src_port; /**< Source Port number in network byte order. */
+
+    /**
+     * @brief Transport protocol.
+     *
+     * Specifies the transport layer protocol used for the network communication, 
+     * such as TCP or UDP.
+     */
+    protocol_t protocol; /**< Transport protocol (TCP or UDP). */
+
+    /**
+     * @brief Differentiated Services Code Point (DSCP) Value for QoS.
+     *
+     * This field specifies the DSCP value used in the IP header for QoS marking. 
+     * The DSCP value is 6 bits wide and ranges from 0 to 63. It is used to 
+     * prioritize network traffic for better Quality of Service.
+     */
+    UINT8_t dscp_value; /**< DSCP value for QoS (range: 0-63). */
+} hal_network_params_t;
+
+/**
+ * @brief Applies QoS and traffic management settings using the provided network parameters.
+ *
+ * This function configures Quality of Service (QoS) and traffic management rules
+ * in the Platform HAL based on the given network parameters.
+ *
+ * @param[in] params Pointer to a `hal_network_params_t` structure containing the 
+ *                   network parameters, including IP addresses, ports, protocol, 
+ *                   and DSCP value. The structure must be correctly initialized.
+ *
+ * @return 0 on success. 
+ * @return Negative value on error.
+ */
+INT platform_hal_qos_apply(const hal_network_params_t *params);
 
 #ifdef __cplusplus
 }
