@@ -40,7 +40,7 @@ DIR="."
 
 # Setting default UT_PROJECT_VERSION to 1.
 if [ -z "${UT_PROJECT_VERSION}" ]; then
-    UT_PROJECT_VERSION=main #alternatively use : UT_PROJECT_VERSION=main ./build_ut.sh, to force build version main/master
+    UT_PROJECT_VERSION="1." #alternatively use : UT_PROJECT_VERSION=main ./build_ut.sh, to force build version main/master
 fi
 
 # This function checks the latest version of UT project and recommends an upgrade if reuqired
