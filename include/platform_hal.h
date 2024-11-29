@@ -1457,7 +1457,7 @@ typedef enum {
 typedef enum {
     PROTOCOL_TCP,  /**< Transmission Control Protocol (TCP) */
     PROTOCOL_UDP   /**< User Datagram Protocol (UDP) */
-} protocol_t;
+} net_proto_t;
 
 /**
  * @brief Structure representing network parameters for QoS and traffic management.
@@ -1535,7 +1535,7 @@ typedef struct {
      * Specifies the transport layer protocol used for the network communication, 
      * such as TCP or UDP.
      */
-    protocol_t protocol; /**< Transport protocol (TCP or UDP). */
+    net_proto_t protocol; /**< Transport protocol (TCP or UDP). */
 
     /**
      * @brief Differentiated Services Code Point (DSCP) Value for QoS.
