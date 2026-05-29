@@ -110,6 +110,10 @@ extern "C"{
 #define RETURN_ERR   -1
 #endif
 
+#ifndef RETURN_UNSUPPORTED
+#define RETURN_UNSUPPORTED -2
+#endif
+
 /**
  * @}
  */
@@ -929,10 +933,6 @@ BOOLEAN platform_hal_getFanStatus(UINT fanIndex);
 INT platform_hal_setFanMaxOverride(BOOLEAN bOverrideFlag, UINT fanIndex);
 
 #ifdef FEATURE_RDKB_THERMAL_MANAGER
-
-#ifndef RETURN_UNSUPPORTED
-#define RETURN_UNSUPPORTED -2
-#endif
 
 /**
  * @enum FAN_SPEED
