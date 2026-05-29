@@ -111,7 +111,7 @@ extern "C"{
 #endif
 
 #ifndef RETURN_UNSUPPORTED
-#define RETURN_UNSUPPORTED -2
+#define RETURN_UNSUPPORTED   -2
 #endif
 
 /**
