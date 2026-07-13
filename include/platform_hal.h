@@ -110,6 +110,10 @@ extern "C"{
 #define RETURN_ERR   -1
 #endif
 
+#ifndef RETURN_UNSUPPORTED
+#define RETURN_UNSUPPORTED   -2
+#endif
+
 /**
  * @}
  */
@@ -1007,6 +1011,7 @@ typedef enum {
 * @return The status of the operation.
 * @retval RETURN_OK if successful in setting the fan speed.
 * @retval RETURN_ERR if any error is detected.
+* @retval RETURN_UNSUPPORTED if a platform does not support this API.
 */
 INT platform_hal_setFanSpeed(UINT fanIndex, FAN_SPEED fanSpeed, FAN_ERR *pErrReason);
 
@@ -1020,6 +1025,7 @@ INT platform_hal_setFanSpeed(UINT fanIndex, FAN_SPEED fanSpeed, FAN_ERR *pErrRea
 * @return The status of the operation.
 * @retval RETURN_OK on successfully retrieving the temperature reading.
 * @retval RETURN_ERR if any error is detected.
+* @retval RETURN_UNSUPPORTED if a platform does not support this API.
 */
 INT platform_hal_getFanTemperature(INT *pTemp);
 
@@ -1033,6 +1039,7 @@ INT platform_hal_getFanTemperature(INT *pTemp);
 * @return The status of the operation.
 * @retval RETURN_OK if successful.
 * @retval RETURN_ERR if any error is detected.
+* @retval RETURN_UNSUPPORTED if a platform does not support this API.
 */
 INT platform_hal_getInputCurrent(INT *pValue);
 
@@ -1047,6 +1054,7 @@ INT platform_hal_getInputCurrent(INT *pValue);
  * @return The status of the operation.
  * @retval RETURN_OK if the input power is successfully retrieved.
  * @retval RETURN_ERR if an error is encountered during the operation.
+ * @retval RETURN_UNSUPPORTED if a platform does not support this API.
  *
  */
 INT platform_hal_getInputPower(INT *pValue);
@@ -1066,6 +1074,7 @@ INT platform_hal_getInputPower(INT *pValue);
  * @return The status of the operation.
  * @retval RETURN_OK if the radio temperature is successfully retrieved.
  * @retval RETURN_ERR if an error is encountered during the operation.
+ * @retval RETURN_UNSUPPORTED if a platform does not support this API.
  *
  */
 INT platform_hal_getRadioTemperature(INT radioIndex, INT *pValue);
@@ -1086,6 +1095,7 @@ INT platform_hal_getRadioTemperature(INT radioIndex, INT *pValue);
  * @return The status of the operation.
  * @retval RETURN_OK if the ECO mode is successfully retrieved.
  * @retval RETURN_ERR if an error is encountered during the operation.
+ * @retval RETURN_UNSUPPORTED if a platform does not support this API.
  *
  */
 INT platform_hal_getEcoModeStatus(INT radioIndex, INT *pValue);
