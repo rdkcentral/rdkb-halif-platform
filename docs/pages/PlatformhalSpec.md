@@ -254,8 +254,7 @@ caller must therefore not assume a bound, and a caller that needs one must impos
 around the call and decide for itself how to treat a call that has not returned.
 
 **Calls known to take longer:** `platform_hal_StartMACsec()`
-and `platform_hal_StopMACsec()` take an explicit timeout
-argument and wait for the outcome, and initialization is expected to block while the hardware is
+ take an explicit timeout argument and wait for the outcome, and initialization is expected to block while the hardware is
 not ready. These are the calls a caller should expect to hold a thread longest.
 
 ### Internal Error Handling
