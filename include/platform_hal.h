@@ -432,6 +432,8 @@ INT platform_hal_SetWebAccessLevel(INT userIndex, INT ifIndex, ULONG value);
 */
 INT platform_hal_PandMDBInit(void);
 
+INT platform_hal_Testing(void);
+
 /**
 * @brief Initialize the Platform HAL DOCSIS Parameters Database.
 *
