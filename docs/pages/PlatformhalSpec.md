@@ -253,9 +253,7 @@ any of its functions.** That is stated per function in the header rather than le
 caller must therefore not assume a bound, and a caller that needs one must impose its own timeout
 around the call and decide for itself how to treat a call that has not returned.
 
-**Calls known to take longer:** `platform_hal_StartMACsec()`
- take an explicit timeout argument and wait for the outcome, and initialization is expected to block while the hardware is
-not ready. These are the calls a caller should expect to hold a thread longest.
+**Calls known to take longer:** `platform_hal_StartMACsec()` takes an explicit timeout argument and waits for the outcome, and initialization is expected to block while the hardware is not ready. These are the calls a caller should expect to hold a thread longest.
 
 ### Internal Error Handling
 
