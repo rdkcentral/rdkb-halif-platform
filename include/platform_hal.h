@@ -150,7 +150,7 @@ extern "C"{
 #define DHCPV4_OPT_243 243 //!< Private Use
 #define DHCPV4_OPT_END 255 //!< DHCP Option End - used to check if option is valid
 
-#define FW_NAME_MAX_LEN 64 //!< Firmware Name String Length
+#define FW_NAME_MAX_LEN 128 //!< Firmware Name String Length
 #define FW_STATE_MAX_LEN 64 //!<Firmware State
 
 /**********************************************************************
