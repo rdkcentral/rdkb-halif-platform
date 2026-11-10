@@ -69,7 +69,7 @@ flowchart LR
         s11["onewifi"]
     end
     hal["Platform HAL: platform_hal.h, delivered as libhal_platform.so"]
-    vendor["Vendor software: board support, drivers and firmware"]
+    vendor["Vendor software"]
     s1 --> hal
     s2 --> hal
     s3 --> hal
@@ -83,11 +83,6 @@ flowchart LR
     s11 --> hal
     hal --> vendor
 ```
-The diagram below describes a high-level software architecture of the Platform HAL module stack.
-
-![Platform HAL Architecture Diag](images/Platform_HAL_Architecture.png)
-
-This raster is re-audited against the interface whenever this topic changes.
 
 ## Optional Components
 
@@ -113,14 +108,6 @@ build-time property rather than a run-time one.
   `FAN_SPEED`,
   `THERMAL_PLATFORM_CONFIG` and
   `FAN_ERR`.
-
-**The gating is deliberately asymmetric, and a caller must not generalise from the names.** The
-LED functions `platform_hal_setLed` and `platform_hal_getLed` are unconditional; only
-`platform_hal_initLed` is gated. The fan readings `platform_hal_getFanSpeed`,
-`platform_hal_getRPM`, `platform_hal_getRotorLock` and `platform_hal_getFanStatus`, and the
-override `platform_hal_setFanMaxOverride`, are all unconditional even though they concern the same
-hardware as the gated thermal block; `platform_hal_setFanMaxOverride` is declared two lines above
-the `FEATURE_RDKB_THERMAL_MANAGER` guard.
 
 ## Component Runtime Execution Requirements
 
@@ -151,7 +138,7 @@ dependency this interface states.
 
 ### Threading Model
 
-**The interface is not thread safe.**
+The interface is not thread safe.
 
 Any module which is invoking the API should ensure calls are made in a thread safe manner. Every
 function in this interface repeats that obligation on its own declaration: a caller must serialise
@@ -168,11 +155,9 @@ the calls and events and for cleaning up the thread.
 
 ### Process Model
 
-All functions in this interface are expected to be called from multiple processes. The two classes
-of caller are visible in the architecture diagram under **Description**: RDK-B `Ccsp` components
-and processes that are not `Ccsp` components. Because the interface is not thread safe and offers
-no cross-process locking of its own, a vendor implementation must protect any shared platform
-resource it touches against concurrent entry from more than one process.
+All functions in this interface are expected to be called from multiple processes. The interface
+provides no cross-process locking, so a vendor implementation protects any shared platform
+resource against concurrent entry from more than one process.
 
 ### Memory Model
 
@@ -182,7 +167,7 @@ sizes are stated per function on the declaration.
 
 #### Caller Responsibilities
 
-- The client is responsible for allocating and de-allocating memory for the functions that
+- The caller is responsible for allocating and de-allocating memory for the functions that
   require it, as specified in the API documentation on each declaration.
 - Where a function documents a minimum buffer size, the caller must honour it. This interface
   defines no length argument and no truncation behaviour for its string outputs, so a caller that
@@ -215,64 +200,54 @@ sizes are stated per function on the declaration.
   In that case the third-party implementation is responsible for de-allocating it internally.
 - A module must release all internally allocated memory when it terminates or closes its
   connection to the HAL, so that no resource is leaked across a service restart.
-- Whether a module may retain a caller-supplied pointer beyond the call that carried it is not
-  stated anywhere in this interface. Neither the header nor the earlier revision of this
-  specification places that obligation on an implementation, so this document does not either: a
-  module that retains such a pointer contradicts nothing stated here, which is why the
-  caller-side guidance above is written conservatively rather than as a guarantee.
 
 ### Power Management Requirements
 
 The HAL is not involved in any of the power management operation. Any power management state
 transitions MUST not affect the operation of the HAL.
 
-Two functions in this interface concern power state as *data* and do not make the HAL a
-participant in power management. `platform_hal_SetLowPowerModeState()`
-carries a `PSM_STATE` value, and
-`platform_hal_getEcoModeStatus()` reports the ECO mode status
-of a radio module. Both report or set data-model state only.
+`platform_hal_SetLowPowerModeState()` sets a `PSM_STATE` value and `platform_hal_getEcoModeStatus()`
+reports the ECO mode status of a radio module. Both handle power state values only
+and do not make the HAL a participant in power management.
 
 ### Asynchronous Notification Model
 
-There are no asynchronous notifications.
-
-This interface declares no function-pointer typedef and no callback registration function, so
-there is no mechanism by which a vendor implementation could notify a caller of an event. Every
-value a caller needs is obtained by calling a function and reading its output. A caller that needs
-to observe a changing quantity, such as a temperature or an interface counter, must poll it.
+There are no asynchronous notifications. The interface has no callback type or registration
+function, so a caller that needs to observe a changing quantity, such as a temperature or an
+interface counter, polls the function that reads it.
 
 
 ### Blocking calls
 
-**Synchronous:** every function in this interface operates synchronously. The calling thread is
-blocked until the operation completes, and each declaration in `include/platform_hal.h` states
-this on its own Doxygen `execution` line.
-
-**No published time bound:** **this interface publishes no numeric timeout or completion time for
-any of its functions.** That is stated per function in the header rather than left implicit. A
-caller must therefore not assume a bound, and a caller that needs one must impose its own timeout
-around the call and decide for itself how to treat a call that has not returned.
-
-**Calls known to take longer:** `platform_hal_StartMACsec()` takes an explicit timeout argument and waits for the outcome, and initialization is expected to block while the hardware is not ready. These are the calls a caller should expect to hold a thread longest.
+- Every function is synchronous: the calling thread is blocked until the operation completes.
+- The initialization functions are expected to block while the hardware is not ready.
+- An implementation applies a timeout to any call that can fail through lack of a response.
+- `platform_hal_StartMACsec()` and `platform_hal_StopMACsec()` block by design until the start or
+  stop operation on the port has an outcome, which may be failure. `platform_hal_StartMACsec()`
+  returns once MACsec has started or the operation gives up; its `timeoutSec` argument is
+  currently unused and is passed as 0, meaning retry forever. A caller does not invoke either
+  function on a latency-sensitive path, checks the return value and, on `RETURN_ERR`, confirms the
+  port's state with `platform_hal_GetMACsecOperationalStatus()` before retrying.
 
 ### Internal Error Handling
 
-All Platform HAL functions that report status do so synchronously, as the return value. The HAL is
-responsible for handling system errors, such as an out-of-memory condition, internally.
+Status-reporting functions return their status synchronously, as the return value. The HAL handles
+system errors, such as an out-of-memory condition, internally.
 
-Three status codes are defined, and the set a caller must handle differs by function.
+| Code | Value | Meaning | Caller action |
+| --- | --- | --- | --- |
+| `RETURN_OK` | 0 | The operation completed successfully. | Use the output. |
+| `RETURN_ERR` | -1 | The operation failed; no more specific cause is reported. | Discard any output, then retry or report the failure. |
+| `RETURN_UNSUPPORTED` | -2 | The platform does not implement the function. Returned only by `platform_hal_setFanSpeed`, `platform_hal_getFanTemperature`, `platform_hal_getInputCurrent`, `platform_hal_getInputPower`, `platform_hal_getRadioTemperature` and `platform_hal_getEcoModeStatus`. | Stop calling the function; the outcome is permanent for the platform. |
 
-- `RETURN_OK`, value 0 \- the operation completed
-  successfully.
-- `RETURN_ERR`, value -1 \- the operation failed. This
-  interface reports no more specific cause, so a caller should discard any output, and retry or
-  report the failure.
-- `RETURN_UNSUPPORTED`, value -2 \- the platform does not
-  implement the function. It is returned by exactly six functions, all inside the
-  `FEATURE_RDKB_THERMAL_MANAGER` block: `platform_hal_setFanSpeed`,
-  `platform_hal_getFanTemperature`, `platform_hal_getInputCurrent`, `platform_hal_getInputPower`,
-  `platform_hal_getRadioTemperature` and `platform_hal_getEcoModeStatus`. Unlike `RETURN_ERR` this
-  outcome is permanent for the platform, so a caller should stop polling rather than retry.
+Four functions return a reading rather than a status code:
+
+- `platform_hal_getRotorLock()` returns 1 for a locked rotor, 0 for an unlocked rotor and -1 where
+  no rotor lock indication is available. The caller reads -1 as unknown, not as a failure, even
+  though it equals `RETURN_ERR`.
+- `platform_hal_getFanSpeed()`, `platform_hal_getRPM()` and `platform_hal_getFanStatus()` return the
+  reading or state directly, so a return of 0 does not distinguish a stopped or disabled fan from a
+  failed query.
 
 Four functions do not participate in this scheme at all, and treating their return value as a
 status code is an error:
@@ -302,157 +277,16 @@ The following non functional requirements should be supported by the component.
 ### Logging and debugging requirements
 
 The component is required to log all error and critical informative messages that help to debug
-and triage issues and to understand the functional flow of the system. Logging should use the
-`syslog` mechanism, which suits system-level software; the use of `printf` is discouraged unless
-`syslog` is unavailable. Logging should be consistent across all HAL components.
+and triage issues and to understand the functional flow of the system. Logging uses the `syslog`
+mechanism; `printf` is discouraged unless `syslog` is unavailable. Logging is consistent across all
+HAL components.
 
-**This interface does not fix a vendor log file name or a log directory.** Neither
-`include/platform_hal.h` nor this repository names one, so no name and no path is asserted here.
-A vendor implementation that logs to a file must agree the name and location with the integrator
-rather than inferring either from a sibling HAL, whose file names are specific to that HAL.
+Log levels follow the Linux standard logging system, in descending order of severity: `FATAL`, `ERROR`, `WARNING`, `NOTICE`, `INFO`, `DEBUG` and `TRACE`. Each log entry carries a timestamp, the log level and a message describing the event or condition.
 
-Log levels follow Linux standard logging. Entries should be categorised by the levels below,
-listed in descending order of severity:
+Because `RETURN_ERR` carries no cause, the implementation logs the cause of every failure it
+detects, including failed fan readings.
 
-- **FATAL:** critical conditions, typically indicating a crash or a severe failure requiring
-  immediate attention.
-- **ERROR:** non-fatal error conditions that nonetheless significantly impede normal operation.
-- **WARNING:** potentially harmful situations that are not yet errors.
-- **NOTICE:** important events that are not errors.
-- **INFO:** general informational messages describing normal operation.
-- **DEBUG:** detailed information useful when diagnosing a problem.
-- **TRACE:** fine-grained logging that traces internal flow.
-
-Each entry should carry a timestamp, the log level and a message describing the event or
-condition, so that log files can be parsed consistently across vendors and components.
-
-Two properties of this interface make logging materially more important here than the general
-requirement suggests. `RETURN_ERR` reports no cause, so the log is the only place a cause can be
-recorded; and `platform_hal_getFanSpeed`, `platform_hal_getRPM` and
-`platform_hal_getFanStatus` have no failure value at all, so a failed query on those three is
-invisible to the caller and must be logged by the implementation if it is to be diagnosable.
-
-**Credentials and device identifiers must not be logged.** Nine of the seventy-one entry points in
-this interface move material that must never reach a log, through fourteen declared values in eight
-groups, and the requirements below are normative rather than advisory: they bind the vendor
-implementation and the RDK-B caller equally. They are stated here because the interface declares no
-redaction helper and no secure-buffer type, so nothing enforces them mechanically.
-
-- **The protected values, named exactly.** The table below is that set in full, derived member by
-  member from the declarations and structure definitions in
-  `include/platform_hal.h` rather than from the accessor
-  briefs, because a brief says what a call is for while the definition is what crosses the boundary. The term **protected
-  value** means, everywhere below, any value this table names — the rules that follow are written
-  against the term rather than against a shorter list, so that they cannot drift from it. 
-
-  | Protected value | Where it is declared, and the call that moves it | Why it is protected |
-  | --- | --- | --- |
-  | The `PPP` password | The `pPassword` output of `platform_hal_GetPppPassword()`. | A `WAN` access credential. The pair authenticates the device to the operator's network, so disclosure of either half narrows an attack on the other and disclosure of both is complete. |
-  | The `PPP` user name | The `pUserName` output of `platform_hal_GetPppUserName()`. | The other half of that pair. A known user name reduces the credential to a single unknown, which is why it is protected to the same standard as the password. |
-  | The device serial number | The `pValue` output of `platform_hal_GetSerialNumber()`. | A unit-unique identifier that links a device to a subscriber record, and personal data in that context. |
-  | The base `MAC` address | The `pValue` output of `platform_hal_GetBaseMacAddress()`. | The address from which every interface address on the unit is derived, so it identifies the device on any network it reaches; its leading octets also disclose the vendor. |
-  | The `CMTS` `MAC` address | The `pValue` output of `platform_hal_getCMTSMac()`. | The hardware address of the headend this device is registered to. It places the subscriber within a named segment of the operator's access network, which is topology a reader of a log should not acquire. |
-  | `hal_network_params_t` `src_mac`, the `src_ip` union's `ipv4` and `ipv6`, and the `dest_ip` union's `ipv4` and `ipv6` | Populated by the caller and passed in to `platform_hal_qos_apply()`. | The endpoints of a live flow: the source identifies a device on the subscriber's network and the destination identifies what it was communicating with, so the pair records who contacted whom. These are protected on the way in exactly as the others are on the way out — the caller that assembled the structure can disclose it as easily as the implementation that receives it. |
-  | `dhcp_opt_list` `dhcp_opt_val`, where the option it belongs to carries an identifier or an address | Returned by `platform_hal_GetDhcpv4_Options()` and `platform_hal_GetDhcpv6_Options()`. | An option value whose content this interface does not describe. The codes listed on `dhcp_opt`include `DHCPV4_OPT_61` and `DHCPV4_OPT_122`, which carry a client identifier and address material respectively, so a value under one of those codes is protected. A caller that cannot establish which code a node holds treats the value as protected. |
-- **No protected value, and no fragment, hash or length of one, is written at any severity.**
-  Neither an implementation nor a caller may write a protected value — whole, truncated, prefixed,
-  suffixed, first-and-last character, encoded, encrypted, hashed, or reduced to a character count or
-  a checksum — to `syslog`, to a `printf` fallback, to standard output, to standard error, to a
-  vendor log file, to a trace or debug stream, or to any error or exception message it constructs or
-  propagates. This holds at every level of the ladder above, `DEBUG` and `TRACE` included: a value
-  too sensitive for `INFO` is not made acceptable by lowering the severity, and a verbose or debug
-  build is not a build in which these values may be logged. It holds for the caller as much as for
-  the implementation: a credential is just as exposed by the middleware that read it as by the `HAL`
-  that returned it.
-- **Redact with one fixed marker; do not truncate, hash or count.** A diagnostic that has to record
-  which accessor failed names the accessor and substitutes the single fixed redaction marker
-  `[REDACTED]` for the value — the same marker for every protected value in the table above,
-  whichever one it stands for, and of a length unrelated to the value it replaces,
-  so that the marker itself discloses neither the content nor the shape of what it hides. A prefix,
-  a suffix, a first-and-last character, a hash, a checksum and a length are each not redaction: a
-  length alone distinguishes one credential format from another, a `MAC` prefix discloses the
-  vendor, and a hash of a serial number is a stable identifier for the unit that produced it. The
-  same reasoning carries to the values added above. An address space small enough to sweep — a
-  48-bit `MAC` address, a 32-bit IPv4 address — makes a digest of one recoverable by enumeration,
-  so a hash is not a redaction of an address either; the first three octets of any of the three
-  `MAC` addresses name the vendor; and a byte count published against a redacted client is still
-  that client's usage if the redaction is not identical for every client in the array.
-- **Every protected value is excluded from crash artefacts, support bundles and telemetry.** A core
-  dump, a minidump, a stack dump, a heap dump, a post-mortem or exception report, and a support or
-  bug-report bundle must not carry any value the table above names — either credential, the serial
-  number, any of the three `MAC` addresses, a client `MAC` with its counters, a flow's source or
-  destination address, or a protected `DHCP` option value — whole, in fragment, hashed or reduced
-  to a length; neither may any telemetry, analytics, metric, metric label or usage report. A
-  per-client traffic metric is the case most easily overlooked, because a metric labelled with a
-  client `MAC` address discloses the address as surely as a log line would. This is a separate
-  obligation from the logging rule and it fails separately — an implementation with disciplined logging still
-  discloses everything if it uploads an unfiltered core or labels a metric with the device serial
-  number. Where a platform's crash handler cannot be constrained, the value must not be resident
-  when an artefact can be taken, which is what the clearing rule below achieves.
-- **Clear after use, sequenced after retention, and only what the caller owns.** A protected value
-  is not left in reusable memory — and the *order* in which it is removed is part of the
-  requirement rather than a detail, because this interface states on every affected declaration
-  that whether the implementation keeps a caller-supplied pointer after the call returns is not
-  established (see `Memory Model`), and overwriting storage an implementation may still be reading
-  corrupts that read. Three cases, and they differ:
-  - *A copy the caller made for itself* — a credential copied into a local, a `MAC` address copied
-    out of a client entry, an address copied out of a flow description — is the caller's alone. No
-    implementation holds a pointer to it, so it is overwritten as soon as the caller is done with
-    it, with nothing to establish first.
-  - *Storage the caller handed across the boundary* is the case the old wording got the wrong way
-    round. The buffers passed to `platform_hal_GetPppPassword()`,
-    `platform_hal_GetPppUserName()`, `platform_hal_GetSerialNumber()`,
-    `platform_hal_GetBaseMacAddress()` and `platform_hal_getCMTSMac()`, the
-    `DSCP_list_t` allocated for `platform_hal_getDscpClientList()` to fill, and the
-    `hal_network_params_t` assembled for `platform_hal_qos_apply()` — the last two of
-    which hold addresses after the call as surely as before it — each stay allocated, unmoved and
-    unmodified until non-retention, release or the completion of any asynchronous use has been
-    established for them. Under this interface that means an explicit statement from the
-    implementation being integrated, since no declaration provides one. Erasure then follows
-    immediately, not at a later convenience.
-  - *An original whose owner is unknown* is not the caller's to erase or release at all. The
-    `dhcp_opt_list` nodes returned by `platform_hal_GetDhcpv4_Options()` and
-    `platform_hal_GetDhcpv6_Options()` and the
-    `PLAT_PROC_MEM_INFO` array that
-    `platform_hal_GetMemoryPaths()` allocates have no stated owner, so a caller copies
-    what it needs, protects the copy and erases the copy.
-
-  All of this holds on the failure path, where a caller-allocated buffer may hold part of a value.
-  What a caller must not do there is read an undefined output, or dereference, clear or free a
-  pointer the call may never have set: a failed call defines neither. And a protected value is not
-  copied into a longer-lived home — a data-model cache, a configuration file, an environment
-  variable, a message queue, a retry buffer, a `URL` or a filename — nor passed to a component
-  that has no need of it.
-- `RETURN_ERR` **reports no cause, and that does not license logging the value.** Where one of the
-  nine calls in the table above fails, the diagnostic records the call and the outcome, never the
-  output contents — which on failure are undefined in any case, so what would be logged is as
-  likely to be a fragment of a previous value as anything else. This applies to the structured
-  outputs as much as to the string ones: on a failed
-  `platform_hal_getDscpClientList()` neither the client array nor `numClients` is
-  defined, so neither may be read for a diagnostic, and on a failed
-  `platform_hal_GetDhcpv4_Options()` or
-  `platform_hal_GetDhcpv6_Options()` the returned list pointers are not defined and
-  must not be walked to describe what went wrong.
-- **What may be logged, stated positively.** The identity of the call, the `RETURN_OK` or
-  `RETURN_ERR` it returned, the `WAN_INTERFACE` and
-  `TRAFFIC_CNT_COMMAND` selectors, the `dscp_value`and
-  `numClients` members of an element with the `numElements`
-  count above them, the `ip_version`, `src_port`
-  , `dest_port` , `protocol`
-  and `dscp_value` members of a flow description, and the `dhcp_opt` code
-  without its value are none of them protected values, and recording them
-  with the timestamp and level the format above requires is
-  the intended way to make a failure diagnosable without disclosure. Two qualifications: a port and
-  a protocol identify a service rather than a person only while they are not published beside the
-  addresses of the same flow, since the complete tuple is the record the row above protects; and a
-  count is not an exemption from the redaction rule — the number of clients in an array may be
-  logged, the length of a credential or an address may not.
-- **The interface guarantees none of this.** It declares no scrubbing function, no opaque credential
-  type and no flag by which a caller could ask an implementation to suppress its own logging, and it
-  provides no way to verify that an implementation observes these rules. A caller integrating a
-  vendor implementation must establish compliance by inspection or by contract rather than assume
-  it, and must treat the absence of these values from a vendor log, core or telemetry feed as
-  unverified until it has done so.
+Implementations must not log credentials, secrets, security-sensitive information, or other sensitive data.
 
 ### Memory and performance requirements
 
@@ -460,7 +294,7 @@ The component should not contribute disproportionately to memory or CPU utilizat
 performing normal operations, and its consumption should be commensurate with the operation
 requested.
 
-**No memory footprint limit is specified for this interface.** No numeric limit on resident
+No memory footprint limit is specified for this interface. No numeric limit on resident
 memory, on allocation size or on CPU utilization is declared by `include/platform_hal.h` or
 anywhere else in this repository, so none is stated here and a caller must not assume one.
 
@@ -523,19 +357,13 @@ reports rather than in its shape: the model name, router region, hardware versio
 identifier and factory cable-modem variant are all read through it, and the LED colour set, the
 fan count and the thermal thresholds are all documented as vendor or OEM specific.
 
-The RDK-B repository inventory records an upstream intention to move the thermal and LED functions
-into HALs of their own. That is an intention recorded upstream, not a property of the interface as
-delivered here: both function families are declared in `platform_hal.h` in this release, and this
-document describes them as part of this interface.
-
 
 ## Interface API Documentation
 
 All function prototypes and datatype definitions for this interface are declared in
-`include/platform_hal.h`, and the per-function reference \- argument ranges, buffer ownership and
-minimum sizes, pre-conditions, post-conditions, every return value and its meaning, blocking
-behaviour and thread safety \- is carried in the Doxygen comment on each declaration. The topics
-below index that surface and state the concepts a caller needs in order to read it.
+`platform_hal.h`. The Doxygen comment on each declaration carries the per-function reference:
+argument ranges, buffer ownership and minimum sizes, return values
+and their meaning.
 
 ### Theory of operation and key concepts
 
@@ -576,10 +404,6 @@ functional grouping does:
   deinitialization or close function in this interface**, so the vendor-internal state established
   at initialization persists for the lifetime of the process and is not releasable through this
   interface. A caller must not look for a counterpart to the initialization calls.
-- **The one exception to caller allocation.**
-  `platform_hal_GetMemoryPaths()` allocates a
-  `PLAT_PROC_MEM_INFO` array and returns it through a
-  caller-held pointer. Its declaration documents this asymmetry explicitly.
 - **Identifiers.** The interface addresses hardware by small integer index rather than by object
   identity: a fan index, an Ethernet port number, a radio index, an LED index bounded by
   `LED_BUFFER_SIZE`, a processor selected by
@@ -589,47 +413,31 @@ functional grouping does:
 
 #### Method Sequencing
 
-- **Initialization first.** The boot-time initialization calls listed under **Initialization and
-  Startup** are made during the boot sequence, and **they may be made in any order**. This
-  interface establishes no order among them.
-- **Which functions depend on which initialization call is not established by this interface.**
-  The initialization calls exist so that dependent functions can work, but neither the header nor
-  this repository states which function depends on which initialization call. A caller must
-  therefore perform the full initialization sequence for its build rather than infer a narrower
-  dependency, and this document does not supply a dependency map, because none is established.
-  The one dependency that *is* stated is the LED one: a `RETURN_ERR` from
-  `platform_hal_initLed` means the other LED functions must not be called.
-- **Paired sequences.** Three groups have an order of their own.
-  `platform_hal_setDscp` with `TRAFFIC_CNT_START` begins traffic counting, and
-  `platform_hal_getDscpClientList` reads the accumulated counters, which
-  `platform_hal_resetDscpCounts` clears and `platform_hal_setDscp` with `TRAFFIC_CNT_STOP` ends.
-  `platform_hal_StartMACsec` and `platform_hal_StopMACsec` bracket MACsec operation on a port,
-  with `platform_hal_GetMACsecOperationalStatus` reporting the achieved state as against the
-  administrative setting read by `platform_hal_GetMACsecEnable`.
+- **Initialization first:** The calls listed under `Initialization and Startup` precede all
+  others, and a caller performs the full initialization sequence for its build.
+- **Paired sequences:** `platform_hal_setDscp` with `TRAFFIC_CNT_START` begins traffic counting,
+  `platform_hal_getDscpClientList` reads the accumulated counters, `platform_hal_resetDscpCounts`
+  clears them and `platform_hal_setDscp` with `TRAFFIC_CNT_STOP` ends counting.
+  `platform_hal_StartMACsec` and `platform_hal_StopMACsec` bracket MACsec operation on a port.
   `platform_hal_LoadThermalConfig` supplies the default thresholds a caller may then apply.
-- **Everything else is order-independent** once initialization has completed, subject only to the
-  serialisation the **Threading Model** requires.
+- **Other calls:** Everything else is order-independent once initialization has completed,
+  subject to the serialisation the `Threading Model` requires.
 
 #### State-Dependent Behavior
 
-- **Configuration progress.** `platform_hal_GetDeviceConfigStatus()`
-  reports how far the device has progressed through its configuration sequence, returning one of
-  the tokens `WaitForImplement`, `In Progress` or `Complete`. A caller uses it to decide whether
-  configuration-dependent work may proceed.
-- **Administrative against operational state.** `platform_hal_GetMACsecEnable` reports the
+- **Configuration progress:** A caller reads `platform_hal_GetDeviceConfigStatus()` to decide
+  whether configuration-dependent work may proceed.
+- **Administrative against operational state:** `platform_hal_GetMACsecEnable` reports the
   administrative setting and `platform_hal_GetMACsecOperationalStatus` reports whether MACsec is
   actually configured at the interface or driver level. The two can legitimately disagree, and a
-  caller that needs the truth about the link must read the operational one.
-- **Readings change with hardware state.** The fan, temperature, current, power and interface
+  caller that needs the state of the link reads the operational one.
+- **Readings change with hardware state:** The fan, temperature, current, power and interface
   statistics functions return values that depend on the platform's condition at the time of the
-  call. `platform_hal_GetInterfaceStats` in particular does not specify the point from which its
-  counters accumulate, so successive reads must be differenced.
-- **Build state changes the surface.** Nine functions are absent from the declared surface when
-  their feature flag is undefined, and six thermal functions may report `RETURN_UNSUPPORTED` at
-  run time even when declared. Both are enumerated under **Optional Components**.
-- **Transitions are not specified.** The values above are states a caller can observe; this
-  interface does not define which transitions between them are legal or in what order they occur.
-  See **State Diagram**.
+  call.
+- **Build state changes the surface:** Nine functions are absent when their feature flag is
+  undefined (see `Optional Components`), and six thermal functions may return
+  `RETURN_UNSUPPORTED` even when declared (see `Internal Error Handling`).
+
 
 
 ### Data Structures and Defines
@@ -714,19 +522,6 @@ them named here by its exact identifier. Sixty-seven return `INT`,
 two return `UINT`, one returns `BOOLEAN` and one returns lowercase `int`; **no function in this
 interface returns `void`.** The nine functions marked *flag* are declared only when their feature
 flag is defined, as set out under **Optional Components**.
-
-This topic is the complete index. The generated Doxygen reference for this repository carries all
-71, the nine marked *flag* included, because the documentation build predefines both feature flags
-as recorded under **Build Requirements**.
-
-**Where these pointers resolve.** The locators in this topic are relative paths into
-`include/platform_hal.h`, the form this documentation set uses throughout, so they resolve on
-GitHub and in a checkout \- the surface a developer using this repository reads. They do **not**
-resolve from inside the generated documentation site: the generator copies each link target
-verbatim into a page one directory below this file, so a site served with `docs/output/html` as its
-root has nothing above that root to reach and answers `404`, and opened from the filesystem the
-same target does not exist. Follow a source pointer on GitHub or in a checkout; inside the
-generated site, reach the same declaration through its `Files` and function-index pages.
 
 **Boot-time initialization:**
 
@@ -862,7 +657,7 @@ involves: the caller, the HAL and the vendor software.
 
 ```mermaid
 sequenceDiagram
-    participant Caller as RDK-B middleware caller
+    participant Caller as RDK-B middleware
     participant PHAL as Platform HAL
     participant Vendor as Vendor software
     Note over Caller,PHAL: Boot sequence. Any order, and may block until hardware is ready.
@@ -906,39 +701,19 @@ sequenceDiagram
 
 ### State Diagram
 
-**No state diagram is drawn for this interface, because this interface does not specify any state
-transition.**
+The interface exposes the status values below but does not define the transitions between them,
+so no state diagram is drawn. A caller observes these values by polling.
 
-Platform HAL exposes status *values* that a caller can read. It does not define which transitions
-between those values are legal, in what order they occur, or what causes one. A diagram drawn from
-the values alone would invent the transitions, so the values are enumerated here instead and the
-gap is stated rather than filled.
-
-The status values this interface exposes are:
-
-- **Device configuration progress** \- `platform_hal_GetDeviceConfigStatus` reports one of the
-  tokens `WaitForImplement`, `In Progress` or `Complete`. This interface does not state whether
-  the sequence is monotonic or whether it can be re-entered.
-- **Power saving mode** \- `PSM_STATE` carries
-  `PSM_UNKNOWN`, `PSM_AC`, `PSM_BATT`, `PSM_HOT`, `PSM_COOLED` or `PSM_NOT_SUPPORTED`. Its own
-  documentation records that these are data-model state only.
-- **Fan state** \- `platform_hal_getFanStatus` reports enabled or disabled;
-  `platform_hal_getRotorLock` reports 1, 0 or -1 for not applicable;
-  `FAN_SPEED` enumerates `FAN_SPEED_OFF`, `FAN_SPEED_SLOW`,
-  `FAN_SPEED_MEDIUM`, `FAN_SPEED_FAST` and `FAN_SPEED_MAX`;
-  `FAN_ERR` enumerates `FAN_ERR_NONE`,
-  `FAN_ERR_HW` and `FAN_ERR_MAX_OVERRIDE_SET`.
-- **MACsec state** \- `platform_hal_GetMACsecEnable` reports the administrative setting and
-  `platform_hal_GetMACsecOperationalStatus` the operational one. This interface does not state how
-  long after `platform_hal_StartMACsec` the operational state may be expected to follow the
-  administrative one.
-- **Firmware bank state** \- `FW_BANK_INFO` carries a
-  `fw_state` string whose expected values are `confirmed` and `TrialBoot#0` through `TrialBoot#n`,
-  where the upper bound is vendor specific. The interface does not define the transitions between
-  a trial boot and a confirmed image.
-- **ECO mode** \- `platform_hal_getEcoModeStatus` reports the ECO mode status of a radio module,
-  and may report `RETURN_UNSUPPORTED` on a platform that does not implement it.
-
-A caller that needs to act on a transition must observe the values by polling and apply its own
-policy, because none of the above is specified by this interface. See **Asynchronous Notification
-Model** for why polling is the only option.
+- **Device configuration progress:** `platform_hal_GetDeviceConfigStatus` reports
+  `WaitForImplement`, `In Progress` or `Complete`.
+- **Power saving mode:** `PSM_STATE` carries `PSM_UNKNOWN`, `PSM_AC`, `PSM_BATT`, `PSM_HOT`,
+  `PSM_COOLED` or `PSM_NOT_SUPPORTED`.
+- **Fan state:** `platform_hal_getFanStatus` reports enabled or disabled and
+  `platform_hal_getRotorLock` the rotor lock status; `FAN_SPEED` enumerates `FAN_SPEED_OFF`,
+  `FAN_SPEED_SLOW`, `FAN_SPEED_MEDIUM`, `FAN_SPEED_FAST` and `FAN_SPEED_MAX`; `FAN_ERR` enumerates
+  `FAN_ERR_NONE`, `FAN_ERR_HW` and `FAN_ERR_MAX_OVERRIDE_SET`.
+- **MACsec state:** `platform_hal_GetMACsecEnable` (administrative) and
+  `platform_hal_GetMACsecOperationalStatus` (operational).
+- **Firmware bank state:** the `fw_state` member of `FW_BANK_INFO` holds `confirmed` or
+  `TrialBoot#0` through `TrialBoot#n`, where the upper bound is vendor specific.
+- **ECO mode:** `platform_hal_getEcoModeStatus`, per radio module.
