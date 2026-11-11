@@ -1285,7 +1285,10 @@ INT platform_hal_getCMTSMac(CHAR *pValue);
 
 typedef enum {
    DOCSIS=1, /*!< DOCSIS mode will be provisioned*/
-   EWAN=2,  /*!< EthWAN mode will be provisioned*/
+   EWAN=2,   /*!< EthWAN mode will be provisioned */
+   EPON=3,   /*!< EPON mode will be provisioned */
+   XGSPON=4, /*!< XGSPON mode will be provisioned */
+   WAN_INTERFACE_MAX /*!< One past the last valid WAN mode */  
 } WAN_INTERFACE;
 
 typedef enum {
