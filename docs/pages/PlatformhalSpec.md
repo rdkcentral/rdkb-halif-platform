@@ -140,13 +140,9 @@ dependency this interface states.
 
 The interface is not thread safe.
 
-Any module which is invoking the API should ensure calls are made in a thread safe manner. Every
-function in this interface repeats that obligation on its own declaration: a caller must serialise
-each call against every other Platform HAL call it makes.
-
-This statement is specific to Platform HAL and is deliberately not aligned with sibling HALs that
-declare themselves thread safe. It is the policy this repository states, and it is what the
-per-function documentation in `include/platform_hal.h` is written against.
+Any module which is invoking the API should ensure calls are made in a thread safe manner. This
+interface-level rule applies to every function: a caller must serialise each call against every
+other Platform HAL call it makes.
 
 Different third-party vendors are allowed to create internal threads to meet their operational
 requirements. In that case the third-party implementation is responsible for synchronizing between
@@ -169,11 +165,8 @@ sizes are stated per function on the declaration.
 
 - The caller is responsible for allocating and de-allocating memory for the functions that
   require it, as specified in the API documentation on each declaration.
-- Where a function documents a minimum buffer size, the caller must honour it. This interface
-  defines no length argument and no truncation behaviour for its string outputs, so a caller that
-  supplies a shorter buffer has no defined protection against an overrun.
-- Where a structure is passed in, the caller allocates it, populates it fully and owns it. **This
-  interface does not state whether an implementation retains a caller-supplied pointer once the
+- Where a function documents a minimum buffer size, the caller must honour it. String accessors that accept a `maxSize` argument also require the caller to pass the actual allocation size; other accessors define no truncation behaviour, so a shorter buffer than documented has no defined protection against an overrun.
+- Where a structure is passed in, the caller allocates and owns it; it populates input structures as required by the declaration and provides storage for output structures.
   call has returned**, so a caller keeps the structure valid for the duration of the call, must not
   rely on the pointer being discarded when the call completes, and must confirm the retention
   behaviour with the vendor implementation before handing this interface storage it is about to
@@ -405,8 +398,7 @@ functional grouping does:
   at initialization persists for the lifetime of the process and is not releasable through this
   interface. A caller must not look for a counterpart to the initialization calls.
 - **Identifiers.** The interface addresses hardware by small integer index rather than by object
-  identity: a fan index, an Ethernet port number, a radio index, an LED index bounded by
-  `LED_BUFFER_SIZE`, a processor selected by
+  identity: a fan index, an Ethernet port number, a radio index, a processor selected by
   `RDK_CPUS`, a firmware bank selected by
   `FW_BANK` and a WAN interface selected by
   `WAN_INTERFACE`.
@@ -670,11 +662,11 @@ sequenceDiagram
     Vendor-->>PHAL: database ready
     PHAL-->>Caller: RETURN_OK
     Note over Caller,PHAL: Read a device property. The caller supplies the output buffer.
-    Caller->>PHAL: platform_hal_GetFirmwareName(pValue)
+    Caller->>PHAL: platform_hal_GetFirmwareName(pValue, maxSize)
     PHAL->>Vendor: read the flashed firmware image name
     Vendor-->>PHAL: image name
     PHAL-->>Caller: RETURN_OK, pValue filled
-    Caller->>PHAL: platform_hal_GetBootloaderVersion(pValue)
+    Caller->>PHAL: platform_hal_GetBootloaderVersion(pValue, maxSize)
     PHAL->>Vendor: read the bootloader version
     Vendor-->>PHAL: bootloader version
     PHAL-->>Caller: RETURN_OK, pValue filled
