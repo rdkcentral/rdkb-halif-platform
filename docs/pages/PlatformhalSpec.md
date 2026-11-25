@@ -140,9 +140,7 @@ dependency this interface states.
 
 The interface is not thread safe.
 
-Any module which is invoking the API should ensure calls are made in a thread safe manner. This
-interface-level rule applies to every function: a caller must serialise each call against every
-other Platform HAL call it makes.
+Any module which is invoking the API should ensure calls are made in a thread safe manner.
 
 Different third-party vendors are allowed to create internal threads to meet their operational
 requirements. In that case the third-party implementation is responsible for synchronizing between
@@ -199,9 +197,6 @@ sizes are stated per function on the declaration.
 The HAL is not involved in any of the power management operation. Any power management state
 transitions MUST not affect the operation of the HAL.
 
-`platform_hal_SetLowPowerModeState()` sets a `PSM_STATE` value and `platform_hal_getEcoModeStatus()`
-reports the ECO mode status of a radio module. Both handle power state values only
-and do not make the HAL a participant in power management.
 
 ### Asynchronous Notification Model
 
